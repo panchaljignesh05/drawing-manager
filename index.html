@@ -11,7 +11,7 @@
     body { font-family: system-ui, -apple-system, sans-serif; }
   </style>
 </head>
-<body class="bg-slate-100 text-slate-800 pb-24">
+<body class="bg-slate-100 text-slate-800 pb-28">
 
   <!-- હેડર -->
   <header class="bg-gradient-to-r from-blue-700 via-indigo-700 to-blue-800 text-white p-4 shadow-lg sticky top-0 z-30">
@@ -36,84 +36,127 @@
     <!-- સર્ચ બાર -->
     <div class="relative">
       <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3.5 text-slate-400 text-sm"></i>
-      <input type="text" id="searchInput" oninput="renderDrawings()" placeholder="કંપનીનું નામ અથવા ડ્રોઈંગ નંબર શોધો..." 
+      <input type="text" id="searchInput" oninput="handleSearch()" placeholder="કંપનીનું નામ અથવા ડ્રોઈંગ નંબર શોધો..." 
         class="w-full bg-white border border-slate-300 rounded-2xl py-3 pl-10 pr-10 text-xs shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent">
       <button onclick="clearSearch()" id="clearSearchBtn" class="hidden absolute right-3.5 top-3.5 text-slate-400 hover:text-slate-600">
         <i class="fa-solid fa-xmark text-sm"></i>
       </button>
     </div>
 
-    <!-- આંકડાકીય સારાંશ કાર્ડ -->
-    <div class="grid grid-cols-2 gap-3">
-      <div class="bg-white p-3.5 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-3">
-        <div class="w-10 h-10 rounded-xl bg-blue-50 text-blue-700 flex items-center justify-center font-black text-lg">
-          <i class="fa-solid fa-building"></i>
-        </div>
-        <div>
-          <p class="text-[11px] text-slate-500 font-semibold">કુલ કંપનીઓ</p>
-          <p class="text-base font-black text-slate-800" id="totalCompaniesCount">૦</p>
-        </div>
-      </div>
+    <!-- ક્વિક એક્શન બટનો -->
+    <div class="grid grid-cols-2 gap-2.5">
+      <button onclick="openAddCompanyModal()" class="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold p-3 rounded-2xl shadow-sm flex items-center justify-center gap-2 text-xs transition active:scale-95">
+        <i class="fa-solid fa-building-circle-plus text-sm text-amber-300"></i>
+        <span>+ નવી કંપની ઉમેરો</span>
+      </button>
 
-      <div class="bg-white p-3.5 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-3">
-        <div class="w-10 h-10 rounded-xl bg-amber-50 text-amber-700 flex items-center justify-center font-black text-lg">
-          <i class="fa-solid fa-file-lines"></i>
-        </div>
-        <div>
-          <p class="text-[11px] text-slate-500 font-semibold">કુલ ડ્રોઈંગ્સ</p>
-          <p class="text-base font-black text-slate-800" id="totalDrawingsCount">૦</p>
-        </div>
-      </div>
+      <button onclick="openAddDrawingModal()" class="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-bold p-3 rounded-2xl shadow-sm flex items-center justify-center gap-2 text-xs transition active:scale-95">
+        <i class="fa-solid fa-file-circle-plus text-sm text-emerald-200"></i>
+        <span>+ નવું ડ્રોઈંગ ઉમેરો</span>
+      </button>
     </div>
 
-    <!-- કંપની ફિલ્ટર ડ્રોપડાઉન -->
-    <div class="flex items-center gap-2">
-      <span class="text-xs font-bold text-slate-600 whitespace-nowrap">કંપની ફિલ્ટર:</span>
-      <select id="companyFilterSelect" onchange="renderDrawings()" class="w-full bg-white border border-slate-300 rounded-xl p-2 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-blue-600">
-        <option value="ALL">બધી જ કંપનીઓ (All Companies)</option>
-      </select>
+    <!-- ટેબ્સ: ૧. કંપનીઓ | ૨. તમામ ડ્રોઈંગ્સ -->
+    <div class="flex bg-slate-200/80 p-1 rounded-2xl text-xs font-bold">
+      <button id="tabCompaniesBtn" onclick="switchTab('companies')" class="flex-1 py-2 rounded-xl bg-white text-blue-700 shadow-sm transition flex items-center justify-center gap-1.5">
+        <i class="fa-solid fa-building"></i> કંપનીઓ (<span id="companyCountBadge">૦</span>)
+      </button>
+      <button id="tabDrawingsBtn" onclick="switchTab('drawings')" class="flex-1 py-2 rounded-xl text-slate-600 hover:text-slate-800 transition flex items-center justify-center gap-1.5">
+        <i class="fa-solid fa-file-lines"></i> તમામ ડ્રોઈંગ્સ (<span id="drawingCountBadge">૦</span>)
+      </button>
     </div>
 
-    <!-- ડ્રોઈંગ્સ લિસ્ટ કન્ટેનર -->
-    <div class="space-y-3" id="drawingsContainer">
-      <!-- ડ્રોઈંગ્સ અહીં ડાયનેમિક લોડ થશે -->
+    <!-- કંપની ફિલ્ટર નોટિસ (જો કોઈ ચોક્કસ કંપની સિલેક્ટ હોય તો) -->
+    <div id="filterNotice" class="hidden bg-blue-50 border border-blue-200 text-blue-800 p-2.5 rounded-xl text-xs flex justify-between items-center">
+      <span class="font-bold flex items-center gap-1.5">
+        <i class="fa-solid fa-filter"></i> ફિલ્ટર: <span id="filterCompanyName"></span>
+      </span>
+      <button onclick="clearCompanyFilter()" class="text-blue-600 hover:underline font-bold text-[11px]">
+        બધા બતાવો (Clear)
+      </button>
+    </div>
+
+    <!-- ૧. કંપનીઓ વ્યુ (Companies Folder Grid) -->
+    <div id="companiesView" class="space-y-3">
+      <!-- કંપની કાર્ડ્સ અહીં આવશે -->
+    </div>
+
+    <!-- ૨. ડ્રોઈંગ્સ વ્યુ (Drawings List) -->
+    <div id="drawingsView" class="hidden space-y-3">
+      <!-- ડ્રોઈંગ્સ અહીં આવશે -->
     </div>
 
   </main>
 
-  <!-- ફ્લોટિંગ + બટન (નવું ડ્રોઈંગ ઉમેરવા માટે) -->
-  <button onclick="openAddModal()" class="fixed right-5 bottom-6 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold px-4 py-3.5 rounded-full shadow-2xl flex items-center gap-2 border-2 border-white/40 active:scale-95 transition z-40">
-    <i class="fa-solid fa-plus text-base"></i>
-    <span class="text-xs">નવું ડ્રોઈંગ ઉમેરો</span>
-  </button>
-
   <!-- ================================================= -->
-  <!-- ૧. નવું ડ્રોઈંગ ઉમેરવાનું મોડલ (Add Drawing Modal) -->
+  <!-- મોડલ ૧: નવી કંપની ઉમેરો (Add Company Modal) -->
   <!-- ================================================= -->
-  <div id="addModal" class="hidden fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
-    <div class="bg-white rounded-3xl max-w-md w-full max-h-[90vh] overflow-y-auto p-5 shadow-2xl border border-slate-200 space-y-4">
-      
+  <div id="addCompanyModal" class="hidden fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
+    <div class="bg-white rounded-3xl max-w-md w-full p-5 shadow-2xl border border-slate-200 space-y-4">
       <div class="flex justify-between items-center border-b border-slate-100 pb-3">
         <h3 class="font-black text-slate-900 text-sm flex items-center gap-2">
-          <i class="fa-solid fa-file-circle-plus text-blue-600"></i> નવું ડ્રોઈંગ / PDF સેવ કરો
+          <i class="fa-solid fa-building text-blue-600"></i> નવી કંપની ઉમેરો (Register Company)
         </h3>
-        <button onclick="closeAddModal()" class="text-slate-400 hover:text-slate-600">
+        <button onclick="closeAddCompanyModal()" class="text-slate-400 hover:text-slate-600">
           <i class="fa-solid fa-xmark text-lg"></i>
         </button>
       </div>
 
-      <!-- ફોર્મ -->
       <div class="space-y-3 text-xs">
         <div>
-          <label class="block font-bold text-slate-700 mb-1">૧. કંપનીનું નામ (Company Name) *</label>
-          <input type="text" id="inputCompany" list="existingCompaniesList" placeholder="દા.ત. પટેલ એન્જિનિયરિંગ / L&T" 
+          <label class="block font-bold text-slate-700 mb-1">કંપનીનું પૂરું નામ *</label>
+          <input type="text" id="newCompanyNameInput" placeholder="દા.ત. પટેલ એન્જિનિયરિંગ / L&T / ટાટા" 
             class="w-full border border-slate-300 rounded-xl p-2.5 focus:outline-none focus:ring-2 focus:ring-blue-600">
-          <datalist id="existingCompaniesList"></datalist>
+        </div>
+        <div>
+          <label class="block font-bold text-slate-700 mb-1">સંપર્ક વ્યક્તિ / ફોન નંબર (Optional)</label>
+          <input type="text" id="newCompanyPhoneInput" placeholder="દા.ત. રમેશભાઈ - 9876543210" 
+            class="w-full border border-slate-300 rounded-xl p-2.5 focus:outline-none focus:ring-2 focus:ring-blue-600">
+        </div>
+      </div>
+
+      <div class="pt-2 flex gap-2 text-xs">
+        <button onclick="saveCompany()" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 rounded-xl shadow">
+          કંપની સેવ કરો
+        </button>
+        <button onclick="closeAddCompanyModal()" class="px-4 bg-slate-200 text-slate-700 font-bold py-2.5 rounded-xl">
+          રદ કરો
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================================================= -->
+  <!-- મોડલ ૨: નવું ડ્રોઈંગ ઉમેરો (Add Drawing Modal) -->
+  <!-- ================================================= -->
+  <div id="addDrawingModal" class="hidden fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
+    <div class="bg-white rounded-3xl max-w-md w-full max-h-[90vh] overflow-y-auto p-5 shadow-2xl border border-slate-200 space-y-4">
+      
+      <div class="flex justify-between items-center border-b border-slate-100 pb-3">
+        <h3 class="font-black text-slate-900 text-sm flex items-center gap-2">
+          <i class="fa-solid fa-file-circle-plus text-emerald-600"></i> નવું ડ્રોઈંગ / PDF સેવ કરો
+        </h3>
+        <button onclick="closeAddDrawingModal()" class="text-slate-400 hover:text-slate-600">
+          <i class="fa-solid fa-xmark text-lg"></i>
+        </button>
+      </div>
+
+      <div class="space-y-3 text-xs">
+        <div>
+          <div class="flex justify-between items-center mb-1">
+            <label class="font-bold text-slate-700">૧. કંપની પસંદ કરો *</label>
+            <button onclick="closeAddDrawingModal(); openAddCompanyModal();" class="text-blue-600 font-bold hover:underline text-[11px]">
+              + નવી કંપની ઉમેરો
+            </button>
+          </div>
+          <select id="selectCompanyInput" class="w-full border border-slate-300 rounded-xl p-2.5 focus:outline-none focus:ring-2 focus:ring-blue-600 bg-white">
+            <!-- કંપની ડ્રોપડાઉન -->
+          </select>
         </div>
 
         <div>
           <label class="block font-bold text-slate-700 mb-1">૨. ડ્રોઈંગ નંબર અથવા પાર્ટનું નામ *</label>
-          <input type="text" id="inputTitle" placeholder="દા.ત. DRG-104 / Shaft-50mm" 
+          <input type="text" id="inputTitle" placeholder="દા.ત. DRG-104 / Shaft 50mm" 
             class="w-full border border-slate-300 rounded-xl p-2.5 focus:outline-none focus:ring-2 focus:ring-blue-600">
         </div>
 
@@ -125,16 +168,16 @@
 
         <div>
           <label class="block font-bold text-slate-700 mb-1">૪. ડ્રોઈંગનો ફોટો અથવા PDF ફાઈલ પસંદ કરો *</label>
-          <div class="border-2 border-dashed border-blue-300 rounded-2xl p-4 text-center bg-blue-50/50 hover:bg-blue-50 transition cursor-pointer relative">
+          <div class="border-2 border-dashed border-emerald-300 rounded-2xl p-4 text-center bg-emerald-50/50 hover:bg-emerald-50 transition cursor-pointer relative">
             <input type="file" id="inputFile" accept="image/*,application/pdf" onchange="handleFileSelect(event)" 
               class="absolute inset-0 opacity-0 cursor-pointer w-full h-full">
             <div id="fileUploadPrompt">
-              <i class="fa-solid fa-cloud-arrow-up text-3xl text-blue-500 mb-1.5"></i>
+              <i class="fa-solid fa-cloud-arrow-up text-3xl text-emerald-500 mb-1.5"></i>
               <p class="font-bold text-slate-700 text-xs">ફોટો પાડો અથવા ફાઈલ પસંદ કરો</p>
               <p class="text-[10px] text-slate-500">JPG, PNG અથવા PDF ફાઈલ</p>
             </div>
-            <div id="fileSelectedPreview" class="hidden text-left bg-white p-2.5 rounded-xl border border-blue-200 flex items-center gap-2">
-              <span id="previewIcon" class="w-8 h-8 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center font-bold"></span>
+            <div id="fileSelectedPreview" class="hidden text-left bg-white p-2.5 rounded-xl border border-emerald-200 flex items-center gap-2">
+              <span id="previewIcon" class="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-600 flex items-center justify-center font-bold"></span>
               <div class="overflow-hidden">
                 <p id="previewFileName" class="font-bold text-slate-800 truncate text-[11px]"></p>
                 <p id="previewFileSize" class="text-[10px] text-slate-500"></p>
@@ -144,11 +187,11 @@
         </div>
       </div>
 
-      <div class="pt-2 flex gap-2">
-        <button onclick="saveDrawing()" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 rounded-xl text-xs shadow flex items-center justify-center gap-1.5">
+      <div class="pt-2 flex gap-2 text-xs">
+        <button onclick="saveDrawing()" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 rounded-xl shadow flex items-center justify-center gap-1.5">
           <i class="fa-solid fa-floppy-disk"></i> સેવ કરો
         </button>
-        <button onclick="closeAddModal()" class="px-4 bg-slate-200 text-slate-700 font-bold py-2.5 rounded-xl text-xs">
+        <button onclick="closeAddDrawingModal()" class="px-4 bg-slate-200 text-slate-700 font-bold py-2.5 rounded-xl">
           રદ કરો
         </button>
       </div>
@@ -156,9 +199,7 @@
     </div>
   </div>
 
-  <!-- ================================================= -->
-  <!-- ૨. ફાઈલ વ્યૂઅર મોડલ (View Image / PDF Modal) -->
-  <!-- ================================================= -->
+  <!-- મોડલ ૩: ફાઈલ વ્યૂઅર (View Image / PDF Modal) -->
   <div id="viewModal" class="hidden fixed inset-0 bg-black/90 z-50 flex flex-col p-3 backdrop-blur-md">
     <div class="flex justify-between items-center text-white pb-3 border-b border-white/20">
       <div>
@@ -174,105 +215,87 @@
         </button>
       </div>
     </div>
-
-    <!-- પ્રીવ્યૂ બોડી -->
-    <div class="flex-1 overflow-auto flex items-center justify-center p-2" id="viewModalBody">
-      <!-- Image અથવા PDF વ્યુઅર અહીં આવશે -->
-    </div>
+    <div class="flex-1 overflow-auto flex items-center justify-center p-2" id="viewModalBody"></div>
   </div>
 
-  <!-- ================================================= -->
-  <!-- ૩. ડેટા બેકઅપ મોડલ (Backup Modal) -->
-  <!-- ================================================= -->
+  <!-- મોડલ ૪: ડેટા બેકઅપ મોડલ -->
   <div id="backupModal" class="hidden fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
     <div class="bg-white rounded-3xl max-w-md w-full p-5 shadow-2xl border border-slate-200 space-y-4 text-xs">
       <div class="flex justify-between items-center border-b border-slate-100 pb-2">
         <h3 class="font-black text-slate-800 text-sm flex items-center gap-1.5">
           <i class="fa-solid fa-shield-halved text-emerald-600"></i> ડેટા સુરક્ષા અને બેકઅપ
         </h3>
-        <button onclick="closeBackupModal()" class="text-slate-400 hover:text-slate-600">
-          <i class="fa-solid fa-xmark"></i>
-        </button>
+        <button onclick="closeBackupModal()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark"></i></button>
       </div>
-      
-      <p class="text-slate-600 leading-relaxed">
-        તમારા તમામ ડ્રોઈંગ્સ તમારા આ ફોનની મેમરીમાં સુરક્ષિત છે. જો ફોન બદલવો હોય તો અહીંથી ફાઈલ ડાઉનલોડ કરીને બીજા ફોનમાં અપલોડ કરી શકો છો.
-      </p>
-
+      <p class="text-slate-600 leading-relaxed">તમામ કંપનીઓ અને ડ્રોઈંગ્સ તમારા આ ફોનમાં સુરક્ષિત છે. જો ફોન બદલવો હોય તો અહીંથી બેકઅપ ફાઈલ સેવ કરી શકો છો.</p>
       <div class="space-y-2 pt-1">
         <button onclick="exportBackupData()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 rounded-xl shadow flex items-center justify-center gap-2">
-          <i class="fa-solid fa-download"></i> તમામ ડેટા બેકઅપ ફાઈલ ડાઉનલોડ કરો
+          <i class="fa-solid fa-download"></i> સંપૂર્ણ બેકઅપ ફાઈલ ડાઉનલોડ કરો
         </button>
-
         <label class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 rounded-xl shadow flex items-center justify-center gap-2 cursor-pointer">
-          <i class="fa-solid fa-upload"></i> જૂની બેકઅપ ફાઈલ રીસ્ટોર (અપલોડ) કરો
+          <i class="fa-solid fa-upload"></i> બેકઅપ ફાઈલ રીસ્ટોર (અપલોડ) કરો
           <input type="file" accept=".json" onchange="importBackupData(event)" class="hidden">
         </label>
       </div>
     </div>
   </div>
 
-  <!-- ================================================= -->
-  <!-- જાવાસ્ક્રિપ્ટ અને IndexedDB લોજિક (Unlimited Storage) -->
-  <!-- ================================================= -->
   <script>
     let db;
     let selectedFileData = null;
+    let activeTab = 'companies'; // 'companies' or 'drawings'
+    let currentFilterCompany = null;
 
-    // ૧. IndexedDB પ્રારંભ (મોબાઇલમાં સેંકડો MB ડ્રોઈંગ્સ સાચવવા માટે)
-    const request = indexedDB.open("DrawingManagerDB", 1);
+    // IndexedDB પ્રારંભ (કંપનીઓ અને ડ્રોઈંગ્સ બંને સંગ્રહવા માટે)
+    const request = indexedDB.open("DrawingManagerMasterDB", 2);
     request.onupgradeneeded = function(e) {
       db = e.target.result;
+      if (!db.objectStoreNames.contains("companies")) {
+        db.createObjectStore("companies", { keyPath: "id", autoIncrement: true });
+      }
       if (!db.objectStoreNames.contains("drawings")) {
-        const store = db.createObjectStore("drawings", { keyPath: "id", autoIncrement: true });
-        store.createIndex("company", "company", { unique: false });
+        const dStore = db.createObjectStore("drawings", { keyPath: "id", autoIncrement: true });
+        dStore.createIndex("company", "company", { unique: false });
       }
     };
     request.onsuccess = function(e) {
       db = e.target.result;
-      renderDrawings();
-    };
-    request.onerror = function() {
-      alert("ડેટાબેઝ શરૂ કરવામાં મુશ્કેલી થઈ!");
+      renderAll();
     };
 
-    // ફાઈલ પસંદગી હેન્ડલર
-    function handleFileSelect(e) {
-      const file = e.target.files[0];
-      if (!file) return;
+    // ૧. નવી કંપની સેવ કરવી
+    function saveCompany() {
+      const name = document.getElementById('newCompanyNameInput').value.trim();
+      const phone = document.getElementById('newCompanyPhoneInput').value.trim();
 
-      const reader = new FileReader();
-      reader.onload = function(evt) {
-        selectedFileData = {
-          dataUrl: evt.target.result,
-          name: file.name,
-          type: file.type,
-          size: (file.size / 1024).toFixed(1) + " KB"
-        };
+      if (!name) {
+        alert("કૃપા કરીને કંપનીનું નામ દાખલ કરો!");
+        return;
+      }
 
-        document.getElementById('fileUploadPrompt').classList.add('hidden');
-        const preview = document.getElementById('fileSelectedPreview');
-        preview.classList.remove('hidden');
+      const tx = db.transaction(["companies"], "readwrite");
+      const store = tx.objectStore("companies");
+      store.add({ name: name, phone: phone, date: new Date().toLocaleDateString('gu-IN') });
 
-        document.getElementById('previewFileName').innerText = file.name;
-        document.getElementById('previewFileSize').innerText = selectedFileData.size;
-        
-        const isPdf = file.type === "application/pdf";
-        document.getElementById('previewIcon').innerHTML = isPdf ? 
-          '<i class="fa-solid fa-file-pdf text-red-600"></i>' : 
-          '<i class="fa-solid fa-image text-blue-600"></i>';
+      tx.oncomplete = function() {
+        alert(`કંપની "${name}" સફળતાપૂર્વક ઉમેરાઈ ગઈ! ✔`);
+        closeAddCompanyModal();
+        renderAll();
       };
-      reader.readAsDataURL(file);
     }
 
-    // ડ્રોઈંગ સેવ કરવું
+    // ૨. ડ્રોઈંગ સેવ કરવું
     function saveDrawing() {
-      const company = document.getElementById('inputCompany').value.trim();
+      const company = document.getElementById('selectCompanyInput').value;
       const title = document.getElementById('inputTitle').value.trim();
       const notes = document.getElementById('inputNotes').value.trim();
 
-      if (!company || !title) {
-        alert("કૃપા કરીને કંપનીનું નામ અને ડ્રોઈંગ નંબર દાખલ કરો!");
+      if (!company) {
+        alert("કૃપા કરીને પહેલાં કંપની પસંદ કરો (અથવા નવી કંપની ઉમેરો)!");
+        return;
+      }
+      if (!title) {
+        alert("કૃપા કરીને ડ્રોઈંગ નંબર અથવા પાર્ટનું નામ દાખલ કરો!");
         return;
       }
       if (!selectedFileData) {
@@ -289,249 +312,145 @@
       };
 
       const tx = db.transaction(["drawings"], "readwrite");
-      const store = tx.objectStore("drawings");
-      store.add(newRecord);
+      tx.objectStore("drawings").add(newRecord);
 
       tx.oncomplete = function() {
         alert("ડ્રોઈંગ સફળતાપૂર્વક સેવ થઈ ગયું! ✔");
-        closeAddModal();
-        renderDrawings();
+        closeAddDrawingModal();
+        renderAll();
       };
     }
 
-    // ડ્રોઈંગ્સ રેન્ડર કરવા અને સર્ચ/ફિલ્ટર
-    function renderDrawings() {
+    // તમામ ડેટા લોડ કરવો
+    function renderAll() {
       if (!db) return;
-      const tx = db.transaction(["drawings"], "readonly");
-      const store = tx.objectStore("drawings");
-      const req = store.getAll();
 
-      req.onsuccess = function() {
-        const allDrawings = req.result || [];
-        const searchQuery = document.getElementById('searchInput').value.trim().toLowerCase();
-        const selectedCompany = document.getElementById('companyFilterSelect').value;
+      // ૧. કંપનીઓ મેળવો
+      const txComp = db.transaction(["companies"], "readonly");
+      const compReq = txComp.objectStore("companies").getAll();
 
-        // કંપની લિસ્ટ ડેટા અપડેટ
-        const companies = [...new Set(allDrawings.map(d => d.company))];
-        updateCompanyDropdown(companies, selectedCompany);
+      compReq.onsuccess = function() {
+        const companies = compReq.result || [];
 
-        // સર્ચ ક્લિયર બટન શો/હાઈડ
-        document.getElementById('clearSearchBtn').classList.toggle('hidden', searchQuery === '');
+        // ૨. ડ્રોઈંગ્સ મેળવો
+        const txDrg = db.transaction(["drawings"], "readonly");
+        const drgReq = txDrg.objectStore("drawings").getAll();
 
-        // ફિલ્ટરિંગ
-        const filtered = allDrawings.filter(item => {
-          const matchCompany = (selectedCompany === "ALL" || item.company === selectedCompany);
-          const matchSearch = item.company.toLowerCase().includes(searchQuery) || 
-                              item.title.toLowerCase().includes(searchQuery) ||
-                              (item.notes && item.notes.toLowerCase().includes(searchQuery));
-          return matchCompany && matchSearch;
-        });
-
-        // આંકડા અપડેટ
-        document.getElementById('totalCompaniesCount').innerText = companies.length;
-        document.getElementById('totalDrawingsCount').innerText = allDrawings.length;
-
-        const container = document.getElementById('drawingsContainer');
-        container.innerHTML = '';
-
-        if (filtered.length === 0) {
-          container.innerHTML = `
-            <div class="bg-white rounded-2xl p-8 text-center border border-slate-200">
-              <i class="fa-solid fa-folder-open text-4xl text-slate-300 mb-2"></i>
-              <p class="font-bold text-slate-600 text-sm">કોઈ ડ્રોઈંગ મળ્યું નથી</p>
-              <p class="text-[11px] text-slate-400 mt-1">નીચે આપેલા '+' બટન પરથી નવું ડ્રોઈંગ ઉમેરો.</p>
-            </div>
-          `;
-          return;
-        }
-
-        // કાર્ડ્સ રેન્ડરિંગ
-        filtered.reverse().forEach(item => {
-          const isPdf = item.file.type === "application/pdf";
-          const card = document.createElement('div');
-          card.className = "bg-white rounded-2xl p-3.5 border border-slate-200 shadow-sm flex flex-col gap-2.5 transition hover:shadow-md";
-
-          card.innerHTML = `
-            <div class="flex justify-between items-start">
-              <div class="flex items-center gap-2.5">
-                <span class="w-9 h-9 rounded-xl ${isPdf ? 'bg-red-50 text-red-600 border border-red-200' : 'bg-blue-50 text-blue-600 border border-blue-200'} flex items-center justify-center font-bold text-base">
-                  <i class="fa-solid ${isPdf ? 'fa-file-pdf' : 'fa-image'}"></i>
-                </span>
-                <div>
-                  <h4 class="font-bold text-slate-900 text-sm">${item.title}</h4>
-                  <p class="text-xs font-semibold text-blue-700 flex items-center gap-1">
-                    <i class="fa-solid fa-building text-[10px]"></i> ${item.company}
-                  </p>
-                </div>
-              </div>
-              <span class="text-[10px] text-slate-400 font-semibold bg-slate-100 px-2 py-0.5 rounded-full">${item.date}</span>
-            </div>
-
-            ${item.notes ? `<p class="text-[11px] text-slate-600 bg-slate-50 p-2 rounded-xl border border-slate-100 italic">“${item.notes}”</p>` : ''}
-
-            <!-- પ્રીવ્યૂ (જો ફોટો હોય તો) -->
-            ${!isPdf ? `
-              <div onclick="viewDrawing(${item.id})" class="h-32 w-full rounded-xl overflow-hidden bg-slate-100 border border-slate-200 cursor-pointer relative group">
-                <img src="${item.file.dataUrl}" alt="${item.title}" class="w-full h-full object-cover">
-                <div class="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 flex items-center justify-center text-white text-xs font-bold transition">
-                  <i class="fa-solid fa-expand mr-1"></i> મોટું જુઓ
-                </div>
-              </div>
-            ` : ''}
-
-            <!-- ક્રિયા બટનો -->
-            <div class="grid grid-cols-3 gap-2 pt-1 text-xs">
-              <button onclick="viewDrawing(${item.id})" class="bg-blue-50 hover:bg-blue-100 text-blue-700 font-bold py-2 rounded-xl flex items-center justify-center gap-1 border border-blue-200 transition">
-                <i class="fa-solid ${isPdf ? 'fa-file-pdf' : 'fa-eye'}"></i> ${isPdf ? 'PDF ખોલો' : 'જુઓ'}
-              </button>
-
-              <a href="${item.file.dataUrl}" download="${item.company}_${item.title}" class="bg-slate-50 hover:bg-slate-100 text-slate-700 font-bold py-2 rounded-xl flex items-center justify-center gap-1 border border-slate-200 transition text-center">
-                <i class="fa-solid fa-download"></i> સાચવો
-              </a>
-
-              <button onclick="deleteDrawing(${item.id})" class="bg-red-50 hover:bg-red-100 text-red-600 font-bold py-2 rounded-xl flex items-center justify-center gap-1 border border-red-200 transition">
-                <i class="fa-solid fa-trash"></i> કાઢી નાખો
-              </button>
-            </div>
-          `;
-          container.appendChild(card);
-        });
-      };
-    }
-
-    // ડ્રોઈંગ વ્યૂ મોડલ ખોલવું
-    function viewDrawing(id) {
-      const tx = db.transaction(["drawings"], "readonly");
-      const store = tx.objectStore("drawings");
-      const req = store.get(id);
-
-      req.onsuccess = function() {
-        const item = req.result;
-        if (!item) return;
-
-        document.getElementById('viewModalTitle').innerText = item.title;
-        document.getElementById('viewModalCompany').innerText = item.company;
-        
-        const dlBtn = document.getElementById('viewDownloadBtn');
-        dlBtn.href = item.file.dataUrl;
-        dlBtn.download = `${item.company}_${item.title}`;
-
-        const body = document.getElementById('viewModalBody');
-        const isPdf = item.file.type === "application/pdf";
-
-        if (isPdf) {
-          body.innerHTML = `
-            <iframe src="${item.file.dataUrl}" class="w-full h-full rounded-xl border border-white/20 bg-white"></iframe>
-          `;
-        } else {
-          body.innerHTML = `
-            <img src="${item.file.dataUrl}" class="max-w-full max-h-[80vh] object-contain rounded-xl shadow-2xl border border-white/10">
-          `;
-        }
-
-        document.getElementById('viewModal').classList.remove('hidden');
-      };
-    }
-
-    function closeViewModal() {
-      document.getElementById('viewModal').classList.add('hidden');
-      document.getElementById('viewModalBody').innerHTML = '';
-    }
-
-    // ડ્રોઈંગ ડિલીટ કરવું
-    function deleteDrawing(id) {
-      if (confirm("શું તમે ખરેખર આ ડ્રોઈંગ ડિલીટ કરવા માંગો છો?")) {
-        const tx = db.transaction(["drawings"], "readwrite");
-        tx.objectStore("drawings").delete(id);
-        tx.oncomplete = function() {
-          renderDrawings();
+        drgReq.onsuccess = function() {
+          const drawings = drgReq.result || [];
+          updateUI(companies, drawings);
         };
-      }
+      };
     }
 
-    // કંપની ડ્રોપડાઉન અપડેટ
-    function updateCompanyDropdown(companies, selected) {
-      const select = document.getElementById('companyFilterSelect');
-      const datalist = document.getElementById('existingCompaniesList');
-      
-      select.innerHTML = '<option value="ALL">બધી જ કંપનીઓ (All Companies)</option>';
-      datalist.innerHTML = '';
+    function updateUI(companies, drawings) {
+      document.getElementById('companyCountBadge').innerText = companies.length;
+      document.getElementById('drawingCountBadge').innerText = drawings.length;
 
-      companies.forEach(comp => {
-        select.innerHTML += `<option value="${comp}" ${comp === selected ? 'selected' : ''}>${comp}</option>`;
-        datalist.innerHTML += `<option value="${comp}">`;
+      // કંપની સિલેક્ટર અપડેટ (ડ્રોઈંગ મોડલ માટે)
+      const selectComp = document.getElementById('selectCompanyInput');
+      selectComp.innerHTML = companies.length === 0 ? 
+        '<option value="">કોઈ કંપની નથી (પહેલાં કંપની ઉમેરો)</option>' : '';
+      companies.forEach(c => {
+        selectComp.innerHTML += `<option value="${c.name}">${c.name}</option>`;
+      });
+
+      renderCompaniesView(companies, drawings);
+      renderDrawingsView(drawings);
+    }
+
+    // કંપની કાર્ડ્સ રેન્ડરિંગ (Folders)
+    function renderCompaniesView(companies, drawings) {
+      const container = document.getElementById('companiesView');
+      container.innerHTML = '';
+
+      const query = document.getElementById('searchInput').value.trim().toLowerCase();
+      const filtered = companies.filter(c => c.name.toLowerCase().includes(query));
+
+      if (filtered.length === 0) {
+        container.innerHTML = `
+          <div class="bg-white rounded-3xl p-8 text-center border border-slate-200">
+            <i class="fa-solid fa-building-circle-exclamation text-4xl text-slate-300 mb-2"></i>
+            <p class="font-bold text-slate-700 text-sm">હજુ સુધી કોઈ કંપની ઉમેરેલી નથી</p>
+            <p class="text-xs text-slate-400 mt-1">ઉપર આપેલા <b>"+ નવી કંપની ઉમેરો"</b> બટનથી તમારી કંપનીઓનું લિસ્ટ બનાવો.</p>
+          </div>
+        `;
+        return;
+      }
+
+      filtered.forEach(c => {
+        const count = drawings.filter(d => d.company === c.name).length;
+        const card = document.createElement('div');
+        card.className = "bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex justify-between items-center transition hover:shadow-md hover:border-blue-300";
+        card.innerHTML = `
+          <div onclick="filterByCompany('${c.name}')" class="flex items-center gap-3 cursor-pointer flex-1">
+            <div class="w-12 h-12 rounded-2xl bg-blue-50 text-blue-700 flex items-center justify-center font-black text-xl border border-blue-200 shadow-sm">
+              <i class="fa-solid fa-folder"></i>
+            </div>
+            <div>
+              <h4 class="font-bold text-slate-900 text-sm flex items-center gap-1.5">
+                ${c.name}
+              </h4>
+              <p class="text-xs text-slate-500 font-semibold mt-0.5">
+                <i class="fa-solid fa-file-lines text-amber-600 text-[11px]"></i> ${count} ડ્રોઈંગ્સ સંગ્રહિત
+              </p>
+              ${c.phone ? `<p class="text-[11px] text-slate-400 mt-0.5">${c.phone}</p>` : ''}
+            </div>
+          </div>
+          <div class="flex items-center gap-1">
+            <button onclick="openAddDrawingForCompany('${c.name}')" title="આ કંપનીમાં ડ્રોઈંગ ઉમેરો" class="w-8 h-8 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-700 flex items-center justify-center text-xs font-bold border border-emerald-200">
+              <i class="fa-solid fa-plus"></i>
+            </button>
+            <button onclick="deleteCompany(${c.id}, '${c.name}')" title="કંપની કાઢી નાખો" class="w-8 h-8 rounded-xl bg-red-50 hover:bg-red-100 text-red-600 flex items-center justify-center text-xs border border-red-200">
+              <i class="fa-solid fa-trash"></i>
+            </button>
+          </div>
+        `;
+        container.appendChild(card);
       });
     }
 
-    // મોડલ કંટ્રોલ્સ
-    function openAddModal() {
-      document.getElementById('inputCompany').value = '';
-      document.getElementById('inputTitle').value = '';
-      document.getElementById('inputNotes').value = '';
-      document.getElementById('inputFile').value = '';
-      selectedFileData = null;
-      document.getElementById('fileUploadPrompt').classList.remove('hidden');
-      document.getElementById('fileSelectedPreview').classList.add('hidden');
-      document.getElementById('addModal').classList.remove('hidden');
-    }
+    // ડ્રોઈંગ્સ રેન્ડરિંગ
+    function renderDrawingsView(drawings) {
+      const container = document.getElementById('drawingsView');
+      container.innerHTML = '';
 
-    function closeAddModal() {
-      document.getElementById('addModal').classList.add('hidden');
-    }
+      const query = document.getElementById('searchInput').value.trim().toLowerCase();
+      
+      const filtered = drawings.filter(item => {
+        const matchComp = !currentFilterCompany || item.company === currentFilterCompany;
+        const matchSearch = item.company.toLowerCase().includes(query) || 
+                            item.title.toLowerCase().includes(query) ||
+                            (item.notes && item.notes.toLowerCase().includes(query));
+        return matchComp && matchSearch;
+      });
 
-    function openBackupModal() { document.getElementById('backupModal').classList.remove('hidden'); }
-    function closeBackupModal() { document.getElementById('backupModal').classList.add('hidden'); }
+      if (filtered.length === 0) {
+        container.innerHTML = `
+          <div class="bg-white rounded-3xl p-8 text-center border border-slate-200">
+            <i class="fa-solid fa-folder-open text-4xl text-slate-300 mb-2"></i>
+            <p class="font-bold text-slate-700 text-sm">કોઈ ડ્રોઈંગ મળ્યું નથી</p>
+          </div>
+        `;
+        return;
+      }
 
-    function clearSearch() {
-      document.getElementById('searchInput').value = '';
-      renderDrawings();
-    }
+      filtered.reverse().forEach(item => {
+        const isPdf = item.file.type === "application/pdf";
+        const card = document.createElement('div');
+        card.className = "bg-white rounded-2xl p-3.5 border border-slate-200 shadow-sm flex flex-col gap-2.5";
+        card.innerHTML = `
+          <div class="flex justify-between items-start">
+            <div class="flex items-center gap-2.5">
+              <span class="w-9 h-9 rounded-xl ${isPdf ? 'bg-red-50 text-red-600 border border-red-200' : 'bg-blue-50 text-blue-600 border border-blue-200'} flex items-center justify-center font-bold text-base">
+                <i class="fa-solid ${isPdf ? 'fa-file-pdf' : 'fa-image'}"></i>
+              </span>
+              <div>
+                <h4 class="font-bold text-slate-900 text-sm">${item.title}</h4>
+                <p class="text-xs font-semibold text-blue-700">${item.company}</p>
+              </div>
+            </div>
+            <span class="text-[10px] text-slate-400 font-semibold bg-slate-100 px-2 py-0.5 rounded-full">${item.date}</span>
+          </div>
 
-    // બેકઅપ ડાઉનલોડ (Export JSON)
-    function exportBackupData() {
-      const tx = db.transaction(["drawings"], "readonly");
-      const store = tx.objectStore("drawings");
-      const req = store.getAll();
-
-      req.onsuccess = function() {
-        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(req.result));
-        const dl = document.createElement('a');
-        dl.setAttribute("href", dataStr);
-        dl.setAttribute("download", `Drawings_Backup_${new Date().toISOString().slice(0,10)}.json`);
-        document.body.appendChild(dl);
-        dl.click();
-        dl.remove();
-      };
-    }
-
-    // બેકઅપ અપલોડ (Import JSON)
-    function importBackupData(e) {
-      const file = e.target.files[0];
-      if (!file) return;
-
-      const reader = new FileReader();
-      reader.onload = function(evt) {
-        try {
-          const imported = JSON.parse(evt.target.result);
-          if (Array.isArray(imported)) {
-            const tx = db.transaction(["drawings"], "readwrite");
-            const store = tx.objectStore("drawings");
-            imported.forEach(item => {
-              delete item.id; // New auto-id
-              store.add(item);
-            });
-            tx.oncomplete = function() {
-              alert("બેકઅપ ડેટા સફળતાપૂર્વક અપલોડ થઈ ગયો! ✔");
-              closeBackupModal();
-              renderDrawings();
-            };
-          }
-        } catch(err) {
-          alert("અમાન્ય ફાઈલ! સાચી બેકઅપ ફાઈલ પસંદ કરો.");
-        }
-      };
-      reader.readAsText(file);
-    }
-  </script>
-</body>
-</html>
+          ${item.notes ? `<p class="text-[11px] text-slate-600 bg-slate-50 p-2 rounded-xl italic">“${item
