@@ -63,11 +63,11 @@
       </div>
 
       <div class="space-y-2.5" id="companyFoldersList">
-        <div class="p-6 text-center text-xs text-slate-400">ડેટા લોડ થઈ રહ્યો છે...</div>
+        <!-- કંપની ફોલ્ડર્સ અહીં લોડ થશે -->
       </div>
     </div>
 
-    <!-- ૨. પસંદ કરેલ કંપનીનું પર્સનલ પેજ -->
+    <!-- ૨. પસંદ કરેલ કંપનીનું પર્સનલ પેજ (જેમાં માત્ર તે જ કંપની દેખાશે) -->
     <div id="viewSingleCompany" class="hidden space-y-3">
       <div class="bg-gradient-to-r from-blue-900 to-indigo-950 text-white p-4 rounded-2xl shadow-md space-y-2.5">
         <div class="flex justify-between items-center">
@@ -212,11 +212,9 @@
   <script>
     let db;
     let selectedFileData = null;
-    let activeCompany = null;
-    let cachedDrawings = [];
-    let cachedCompanies = [];
+    let activeCompany = null; // હાલમાં કઈ કંપની ખોલેલી છે
 
-    // ફોનનું બેક બટન દબાવવાથી ફોલ્ડર બંધ થાય
+    // ફોનનું બેક બટન દબાવવાથી ફોલ્ડર બંધ થાય તે માટે
     window.addEventListener('popstate', function() {
       if (!document.getElementById('viewModal').classList.contains('hidden')) {
         closeViewModal();
@@ -239,63 +237,21 @@
       }
     });
 
-    // જૂના તમામ ડેટાબેઝમાંથી ડેટા ખેંચી લેવો
-    async function initDatabases() {
-      // ૧. મુખ્ય ડેટાબેઝ ખોલો
-      const req = indexedDB.open("DrawingManagerMasterDB", 2);
-      req.onupgradeneeded = function(e) {
-        const d = e.target.result;
-        if (!d.objectStoreNames.contains("companies")) {
-          d.createObjectStore("companies", { keyPath: "id", autoIncrement: true });
-        }
-        if (!d.objectStoreNames.contains("drawings")) {
-          const s = d.createObjectStore("drawings", { keyPath: "id", autoIncrement: true });
-          s.createIndex("company", "company", { unique: false });
-        }
-      };
-      req.onsuccess = async function(e) {
-        db = e.target.result;
-        await checkAndMigrateOldDB();
-        loadAllData();
-      };
-    }
-
-    // જો કોઈ ડ્રોઈંગ પહેલા ડેટાબેઝ (DrawingManagerDB) માં રહી ગયું હોય તો ખેંચી લેવું
-    function checkAndMigrateOldDB() {
-      return new Promise((resolve) => {
-        try {
-          const oldReq = indexedDB.open("DrawingManagerDB", 1);
-          oldReq.onsuccess = function(e) {
-            const oldDb = e.target.result;
-            if (oldDb.objectStoreNames.contains("drawings")) {
-              const tx = oldDb.transaction(["drawings"], "readonly");
-              const r = tx.objectStore("drawings").getAll();
-              r.onsuccess = function() {
-                const oldDrawings = r.result || [];
-                if (oldDrawings.length > 0) {
-                  const newTx = db.transaction(["drawings"], "readwrite");
-                  const newStore = newTx.objectStore("drawings");
-                  oldDrawings.forEach(item => {
-                    const copy = { ...item };
-                    delete copy.id;
-                    newStore.add(copy);
-                  });
-                  newTx.oncomplete = () => resolve();
-                } else {
-                  resolve();
-                }
-              };
-              r.onerror = () => resolve();
-            } else {
-              resolve();
-            }
-          };
-          oldReq.onerror = () => resolve();
-        } catch (err) {
-          resolve();
-        }
-      });
-    }
+    const request = indexedDB.open("DrawingManagerMasterDB", 2);
+    request.onupgradeneeded = function(e) {
+      db = e.target.result;
+      if (!db.objectStoreNames.contains("companies")) {
+        db.createObjectStore("companies", { keyPath: "id", autoIncrement: true });
+      }
+      if (!db.objectStoreNames.contains("drawings")) {
+        const dStore = db.createObjectStore("drawings", { keyPath: "id", autoIncrement: true });
+        dStore.createIndex("company", "company", { unique: false });
+      }
+    };
+    request.onsuccess = function(e) {
+      db = e.target.result;
+      loadAllData();
+    };
 
     function saveCompany() {
       const name = document.getElementById('newCompanyNameInput').value.trim();
@@ -348,9 +304,8 @@
 
         drgReq.onsuccess = function() {
           const drawings = drgReq.result || [];
-          cachedDrawings = drawings;
 
-          // કંપનીઓ ડ્રોઈંગ્સમાંથી પણ આપોઆપ ખેંચી લેવી
+          // કંપનીઓ આપમેળે શોધી લેવી (કોઈ પણ ડેટા છૂટે નહીં)
           const compMap = new Map();
           storedCompanies.forEach(c => compMap.set(c.name, c));
           drawings.forEach(d => {
@@ -359,18 +314,18 @@
             }
           });
 
-          cachedCompanies = Array.from(compMap.values());
+          const allCompanies = Array.from(compMap.values());
 
           if (activeCompany) {
-            renderSingleCompanyView(cachedCompanies, cachedDrawings);
+            renderSingleCompanyView(allCompanies, drawings);
           } else {
-            renderCompanyFolders(cachedCompanies, cachedDrawings);
+            renderCompanyFolders(allCompanies, drawings);
           }
         };
       };
     }
 
-    // ૧. મુખ્ય હોમ પેજ: કંપનીઓના ફોલ્ડર્સ
+    // ૧. મુખ્ય હોમ પેજ: માત્ર કંપનીઓના ફોલ્ડર્સ
     function renderCompanyFolders(companies, drawings) {
       document.getElementById('viewAllCompanies').classList.remove('hidden');
       document.getElementById('viewSingleCompany').classList.add('hidden');
@@ -386,7 +341,6 @@
           <div class="bg-white rounded-3xl p-8 text-center border border-slate-200">
             <i class="fa-solid fa-folder-open text-4xl text-slate-300 mb-2"></i>
             <p class="font-bold text-slate-700 text-sm">કોઈ કંપની નથી</p>
-            <p class="text-xs text-slate-400 mt-1">ઉપર આપેલા <b>"+ નવી કંપની"</b> બટન પરથી નવી કંપની ઉમેરો.</p>
           </div>
         `;
         return;
@@ -395,10 +349,10 @@
       filtered.forEach(c => {
         const count = drawings.filter(d => d.company === c.name).length;
         const card = document.createElement('div');
-        card.className = "bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex justify-between items-center cursor-pointer active:scale-[0.98] transition hover:shadow-md hover:border-blue-500";
+        card.className = "bg-white p-3.5 rounded-2xl border border-slate-200 shadow-sm flex justify-between items-center cursor-pointer active:scale-[0.98]";
         card.innerHTML = `
           <div onclick="openCompanyFolder('${c.name}')" class="flex items-center gap-3 flex-1">
-            <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-900 to-slate-950 text-amber-400 flex items-center justify-center font-black text-xl border-2 border-amber-400/40 shadow-sm flex-shrink-0">
+            <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-900 to-slate-950 text-amber-400 flex items-center justify-center font-black text-xl border-2 border-amber-400/40 shadow-sm">
               <i class="fa-solid fa-folder"></i>
             </div>
             <div>
@@ -410,4 +364,253 @@
             </div>
           </div>
           <div class="flex items-center gap-1.5">
-            <button onclick="event.stopPropagation(); deleteCompany('${c.id}', '${c.name}')" class="w-8 h-8 rounded-xl bg-red-50 text-red-600 flex items-
+            <button onclick="event.stopPropagation(); deleteCompany('${c.id}', '${c.name}')" class="w-8 h-8 rounded-xl bg-red-50 text-red-600 flex items-center justify-center text-xs">
+              <i class="fa-solid fa-trash"></i>
+            </button>
+            <span class="text-slate-300 text-sm ml-1"><i class="fa-solid fa-chevron-right"></i></span>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    // ૨. કંપની ખોલવી (માત્ર તે જ કંપની દેખાશે)
+    function openCompanyFolder(compName) {
+      activeCompany = compName;
+      document.getElementById('searchInput').value = '';
+      document.getElementById('clearSearchBtn').classList.add('hidden');
+      history.pushState({ view: 'company', name: compName }, '');
+      loadAllData();
+    }
+
+    function closeCompanyFolder() {
+      activeCompany = null;
+      loadAllData();
+    }
+
+    // માત્ર તે જ કંપનીના ડ્રોઈંગ્સ બતાવવા
+    function renderSingleCompanyView(companies, drawings) {
+      document.getElementById('viewAllCompanies').classList.add('hidden');
+      document.getElementById('viewSingleCompany').classList.remove('hidden');
+
+      const compObj = companies.find(c => c.name === activeCompany);
+      document.getElementById('currentCompTitle').innerHTML = `<i class="fa-solid fa-folder-open text-amber-400 mr-1.5"></i> ${activeCompany}`;
+      document.getElementById('currentCompPhone').innerText = compObj && compObj.phone ? `સંપર્ક: ${compObj.phone}` : '';
+
+      // માત્ર આ જ કંપનીના ડ્રોઈંગ્સ ફિલ્ટર
+      const query = document.getElementById('searchInput').value.trim().toLowerCase();
+      const thisDrawings = drawings.filter(d => d.company === activeCompany && (d.title.toLowerCase().includes(query) || (d.notes && d.notes.toLowerCase().includes(query))));
+
+      document.getElementById('currentCompBadge').innerText = `${thisDrawings.length} ડ્રોઈંગ્સ`;
+
+      const container = document.getElementById('singleCompanyDrawings');
+      container.innerHTML = '';
+
+      if (thisDrawings.length === 0) {
+        container.innerHTML = `
+          <div class="bg-white rounded-3xl p-8 text-center border border-slate-200">
+            <i class="fa-solid fa-file-circle-question text-4xl text-slate-300 mb-2"></i>
+            <p class="font-bold text-slate-700 text-sm">આ કંપનીમાં હજુ કોઈ ડ્રોઈંગ નથી</p>
+            <p class="text-xs text-slate-400 mt-1">ઉપર આપેલા લીલા બટનથી ડ્રોઈંગ ઉમેરો.</p>
+          </div>
+        `;
+        return;
+      }
+
+      thisDrawings.reverse().forEach(item => {
+        const isPdf = item.file.type === "application/pdf";
+        const card = document.createElement('div');
+        card.className = "bg-white rounded-2xl p-3.5 border border-slate-200 shadow-sm flex flex-col gap-2.5";
+        card.innerHTML = `
+          <div class="flex justify-between items-start">
+            <div class="flex items-center gap-2.5">
+              <span class="w-10 h-10 rounded-xl ${isPdf ? 'bg-red-50 text-red-600 border border-red-200' : 'bg-blue-50 text-blue-700 border border-blue-200'} flex items-center justify-center font-bold text-lg">
+                <i class="fa-solid ${isPdf ? 'fa-file-pdf' : 'fa-image'}"></i>
+              </span>
+              <div>
+                <h4 class="font-bold text-slate-900 text-sm">${item.title}</h4>
+                <p class="text-[11px] text-slate-400 font-semibold">${item.date}</p>
+              </div>
+            </div>
+            <span class="text-[10px] text-blue-800 font-bold bg-blue-50 border border-blue-200 px-2 py-0.5 rounded-lg">${isPdf ? 'PDF' : 'ફોટો'}</span>
+          </div>
+
+          ${item.notes ? `<p class="text-[11px] text-slate-600 bg-slate-50 p-2 rounded-xl italic">“${item.notes}”</p>` : ''}
+
+          ${!isPdf ? `
+            <div onclick="viewDrawing(${item.id})" class="h-36 w-full rounded-xl overflow-hidden bg-slate-100 border border-slate-200 cursor-pointer">
+              <img src="${item.file.dataUrl}" alt="${item.title}" class="w-full h-full object-cover">
+            </div>
+          ` : ''}
+
+          <div class="grid grid-cols-3 gap-2 pt-1 text-xs">
+            <button onclick="viewDrawing(${item.id})" class="bg-blue-50 text-blue-800 font-bold py-2 rounded-xl border border-blue-200">
+              <i class="fa-solid ${isPdf ? 'fa-file-pdf' : 'fa-eye'}"></i> ${isPdf ? 'PDF ખોલો' : 'જુઓ'}
+            </button>
+            <a href="${item.file.dataUrl}" download="${item.company}_${item.title}" class="bg-slate-50 text-slate-700 font-bold py-2 rounded-xl border border-slate-200 text-center">
+              <i class="fa-solid fa-download"></i> સાચવો
+            </a>
+            <button onclick="deleteDrawing(${item.id})" class="bg-red-50 text-red-600 font-bold py-2 rounded-xl border border-red-200">
+              <i class="fa-solid fa-trash"></i> કાઢી નાખો
+            </button>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function openAddDrawingForThisCompany() {
+      document.getElementById('formCompanyName').value = activeCompany;
+      document.getElementById('inputTitle').value = '';
+      document.getElementById('inputNotes').value = '';
+      document.getElementById('inputFile').value = '';
+      selectedFileData = null;
+      document.getElementById('fileUploadPrompt').classList.remove('hidden');
+      document.getElementById('fileSelectedPreview').classList.add('hidden');
+      document.getElementById('addDrawingModal').classList.remove('hidden');
+    }
+
+    function handleSearch() {
+      const q = document.getElementById('searchInput').value.trim();
+      document.getElementById('clearSearchBtn').classList.toggle('hidden', q === '');
+      loadAllData();
+    }
+
+    function clearSearch() {
+      document.getElementById('searchInput').value = '';
+      document.getElementById('clearSearchBtn').classList.add('hidden');
+      loadAllData();
+    }
+
+    function handleFileSelect(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(evt) {
+        selectedFileData = {
+          dataUrl: evt.target.result,
+          name: file.name,
+          type: file.type,
+          size: (file.size / 1024).toFixed(1) + " KB"
+        };
+        document.getElementById('fileUploadPrompt').classList.add('hidden');
+        document.getElementById('fileSelectedPreview').classList.remove('hidden');
+        document.getElementById('previewFileName').innerText = file.name;
+        document.getElementById('previewFileSize').innerText = selectedFileData.size;
+        document.getElementById('previewIcon').innerHTML = file.type === "application/pdf" ? 
+          '<i class="fa-solid fa-file-pdf text-red-600"></i>' : '<i class="fa-solid fa-image text-emerald-600"></i>';
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function viewDrawing(id) {
+      const tx = db.transaction(["drawings"], "readonly");
+      const req = tx.objectStore("drawings").get(id);
+
+      req.onsuccess = function() {
+        const item = req.result;
+        if (!item) return;
+
+        document.getElementById('viewModalTitle').innerText = item.title;
+        document.getElementById('viewModalCompany').innerText = item.company;
+        const dlBtn = document.getElementById('viewDownloadBtn');
+        dlBtn.href = item.file.dataUrl;
+        dlBtn.download = `${item.company}_${item.title}`;
+
+        const body = document.getElementById('viewModalBody');
+        body.innerHTML = item.file.type === "application/pdf" ? 
+          `<iframe src="${item.file.dataUrl}" class="w-full h-[80vh] rounded-xl border border-white/20 bg-white"></iframe>` :
+          `<img src="${item.file.dataUrl}" class="max-w-full max-h-[80vh] object-contain rounded-xl">`;
+
+        document.getElementById('viewModal').classList.remove('hidden');
+      };
+    }
+
+    function closeViewModal() {
+      document.getElementById('viewModal').classList.add('hidden');
+      document.getElementById('viewModalBody').innerHTML = '';
+    }
+
+    function deleteCompany(id, name) {
+      if (confirm(`શું તમે કંપની "${name}" કાઢી નાખવા માંગો છો? તેના ડ્રોઇંગ્સ પણ ડિલીટ થશે.`)) {
+        const tx = db.transaction(["companies", "drawings"], "readwrite");
+        if (typeof id === 'number') tx.objectStore("companies").delete(id);
+        
+        const dStore = tx.objectStore("drawings");
+        const req = dStore.getAll();
+        req.onsuccess = function() {
+          (req.result || []).forEach(d => {
+            if (d.company === name) dStore.delete(d.id);
+          });
+        };
+        tx.oncomplete = function() { loadAllData(); };
+      }
+    }
+
+    function deleteDrawing(id) {
+      if (confirm("શું તમે આ ડ્રોઇંગ કાઢી નાખવા માંગો છો?")) {
+        const tx = db.transaction(["drawings"], "readwrite");
+        tx.objectStore("drawings").delete(id);
+        tx.oncomplete = function() { loadAllData(); };
+      }
+    }
+
+    function openAddCompanyModal() {
+      document.getElementById('newCompanyNameInput').value = '';
+      document.getElementById('newCompanyPhoneInput').value = '';
+      document.getElementById('addCompanyModal').classList.remove('hidden');
+    }
+    function closeAddCompanyModal() { document.getElementById('addCompanyModal').classList.add('hidden'); }
+    function closeAddDrawingModal() { document.getElementById('addDrawingModal').classList.add('hidden'); }
+    function openBackupModal() { document.getElementById('backupModal').classList.remove('hidden'); }
+    function closeBackupModal() { document.getElementById('backupModal').classList.add('hidden'); }
+
+    function exportBackupData() {
+      const tx = db.transaction(["companies", "drawings"], "readonly");
+      const cReq = tx.objectStore("companies").getAll();
+      const dReq = tx.objectStore("drawings").getAll();
+
+      tx.oncomplete = function() {
+        const backupObj = { companies: cReq.result, drawings: dReq.result };
+        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(backupObj));
+        const dl = document.createElement('a');
+        dl.setAttribute("href", dataStr);
+        dl.setAttribute("download", `SGW_Drawings_Backup_${new Date().toISOString().slice(0,10)}.json`);
+        document.body.appendChild(dl);
+        dl.click();
+        dl.remove();
+      };
+    }
+
+    function importBackupData(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(evt) {
+        try {
+          const imported = JSON.parse(evt.target.result);
+          if (imported.companies && imported.drawings) {
+            const tx = db.transaction(["companies", "drawings"], "readwrite");
+            const cStore = tx.objectStore("companies");
+            const dStore = tx.objectStore("drawings");
+
+            imported.companies.forEach(c => { delete c.id; cStore.add(c); });
+            imported.drawings.forEach(d => { delete d.id; dStore.add(d); });
+
+            tx.oncomplete = function() {
+              alert("બેકઅપ અપલોડ થઈ ગયું! ✔");
+              closeBackupModal();
+              loadAllData();
+            };
+          }
+        } catch(err) {
+          alert("અમાન્ય ફાઈલ!");
+        }
+      };
+      reader.readAsText(file);
+    }
+  </script>
+</body>
+</html>
