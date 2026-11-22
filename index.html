@@ -1,616 +1,552 @@
 <!DOCTYPE html>
 <html lang="gu">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SAGAR GRINDING WORKS - ડ્રોઈંગ મેનેજર</title>
-  
-  <link rel="icon" type="image/png" href="1e4f928e-8efe-4335-9efd-a31f71419358.png">
-  <link rel="apple-touch-icon" href="1e4f928e-8efe-4335-9efd-a31f71419358.png">
-  <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#020617">
-  
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SAGAR GRINDING WORKS — ડ્રોઈંગ & PDF મેનેજર</title>
   <style>
-    body { font-family: system-ui, -apple-system, sans-serif; }
+    :root {
+      --bg: #f4f6f9;
+      --card: #ffffff;
+      --primary: #1e3a5f;
+      --primary-dark: #142842;
+      --accent: #0f766e;
+      --whatsapp: #16a34a;
+      --danger: #b91c1c;
+      --text: #111827;
+      --muted: #6b7280;
+      --border: #e5e7eb;
+    }
+    * { box-sizing: border-box; font-family: system-ui, -apple-system, "Noto Sans Gujarati", sans-serif; }
+    body { margin: 0; background: var(--bg); color: var(--text); }
+    header {
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      color: #fff; padding: 16px; position: sticky; top: 0; z-index: 20;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+    }
+    .header-inner {
+      max-width: 980px; margin: 0 auto; display: flex; flex-wrap: wrap;
+      align-items: center; justify-content: space-between; gap: 12px;
+    }
+    .brand h1 { margin: 0; font-size: 1.15rem; letter-spacing: 0.4px; }
+    .brand p { margin: 2px 0 0; font-size: 0.85rem; opacity: 0.92; }
+    .header-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+    button, .btn {
+      border: none; border-radius: 8px; padding: 9px 14px; font-size: 0.9rem;
+      cursor: pointer; font-weight: 600; display: inline-flex; align-items: center; gap: 6px;
+      text-decoration: none;
+    }
+    .btn-primary { background: var(--accent); color: #fff; }
+    .btn-wa { background: var(--whatsapp); color: #fff; }
+    .btn-light { background: rgba(255,255,255,0.16); color: #fff; }
+    .btn-outline { background: #fff; color: var(--text); border: 1px solid var(--border); }
+    .btn-danger { background: var(--danger); color: #fff; }
+    .btn-sm { padding: 6px 10px; font-size: 0.8rem; }
+
+    .container { max-width: 980px; margin: 18px auto; padding: 0 14px 64px; }
+    .search-box {
+      width: 100%; padding: 12px 14px; border-radius: 10px; border: 1px solid var(--border);
+      background: #fff; font-size: 0.95rem; margin-bottom: 14px;
+    }
+    .breadcrumb {
+      display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+      margin-bottom: 14px; font-size: 0.9rem;
+    }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 14px; }
+    .card {
+      background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+      padding: 14px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); display: flex;
+      flex-direction: column; justify-content: space-between; gap: 10px;
+    }
+    .folder-title { font-size: 1.05rem; font-weight: 700; color: var(--primary); margin: 0; cursor: pointer; }
+    .meta { font-size: 0.8rem; color: var(--muted); }
+    .badge {
+      display: inline-block; background: #e6f4f1; color: var(--accent);
+      font-weight: 700; font-size: 0.74rem; padding: 2px 7px; border-radius: 999px;
+      margin-left: 6px;
+    }
+    .card-actions { display: flex; gap: 6px; flex-wrap: wrap; }
+    .preview-thumb {
+      width: 100%; height: 145px; object-fit: cover; border-radius: 8px;
+      background: #eef2f7; display: flex; align-items: center; justify-content: center;
+      font-weight: 700; color: var(--primary); cursor: pointer;
+    }
+    .empty {
+      background: #fff; border: 1px dashed #cbd5e1; border-radius: 12px;
+      padding: 28px; text-align: center; color: var(--muted);
+    }
+
+    .modal-backdrop {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.6);
+      display: none; align-items: center; justify-content: center; z-index: 50; padding: 12px;
+    }
+    .modal-backdrop.open { display: flex; }
+    .modal {
+      background: #fff; border-radius: 14px; width: 100%; max-width: 640px;
+      max-height: 92vh; overflow-y: auto; padding: 18px;
+    }
+    .modal h3 { margin: 0 0 10px; }
+    .field { margin-bottom: 12px; }
+    .field label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 4px; }
+    .field input, .field select {
+      width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border); font-size: 0.95rem;
+    }
+    .viewer-stage {
+      width: 100%; height: 58vh; overflow: auto; background: #f8fafc;
+      border: 1px solid var(--border); border-radius: 10px;
+      display: flex; align-items: center; justify-content: center; padding: 10px;
+    }
+    .viewer-img {
+      max-width: 100%; max-height: 100%; transition: transform 0.15s ease;
+      transform-origin: center center; border-radius: 6px;
+    }
+    .viewer-toolbar {
+      display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px;
+    }
+    .toast {
+      position: fixed; bottom: 18px; left: 50%; transform: translateX(-50%);
+      background: #111827; color: #fff; padding: 10px 16px; border-radius: 8px;
+      font-size: 0.88rem; z-index: 100; display: none;
+    }
   </style>
 </head>
-<body class="bg-slate-100 text-slate-800 pb-28">
-
-  <!-- હેડર -->
-  <header class="bg-gradient-to-r from-slate-950 via-slate-900 to-blue-950 text-white p-3.5 shadow-2xl sticky top-0 z-30 border-b-2 border-cyan-500/40">
-    <div class="max-w-md mx-auto flex justify-between items-center">
-      <div class="flex items-center gap-3">
-        <img src="1e4f928e-8efe-4335-9efd-a31f71419358.png" alt="SGW Logo" class="w-12 h-12 rounded-full border-2 border-cyan-400 shadow-xl object-cover flex-shrink-0">
-        <div>
-          <h1 class="text-base font-black tracking-wide leading-tight text-white uppercase">SAGAR GRINDING WORKS</h1>
-          <p class="text-[11px] text-cyan-300 font-semibold flex items-center gap-1">
-            <i class="fa-solid fa-gear fa-spin text-[9px] text-amber-400"></i> ડ્રોઈંગ & PDF મેનેજર
-          </p>
-        </div>
+<body>
+  <header>
+    <div class="header-inner">
+      <div class="brand">
+        <h1>SAGAR GRINDING WORKS</h1>
+        <p id="headerStats">ડ્રોઈંગ &amp; PDF મેનેજર</p>
       </div>
-      <button onclick="openBackupModal()" class="bg-white/10 hover:bg-white/20 px-2.5 py-1.5 rounded-xl text-xs font-bold border border-cyan-400/40 text-cyan-200">
-        <i class="fa-solid fa-cloud-arrow-down text-xs"></i> બેકઅપ
-      </button>
+      <div class="header-actions">
+        <button class="btn-primary" id="btnAddCompany">+ નવી કંપની</button>
+        <button class="btn-light" id="btnBackup">બેકઅપ</button>
+        <button class="btn-light" id="btnRestore">રીસ્ટોર</button>
+        <input type="file" id="restoreFile" accept=".json,application/json" style="display:none" />
+      </div>
     </div>
   </header>
 
-  <main class="max-w-md mx-auto p-4 space-y-4">
-
-    <!-- સર્ચ બાર -->
-    <div class="relative">
-      <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3.5 text-slate-400 text-sm"></i>
-      <input type="text" id="searchInput" oninput="handleSearch()" placeholder="શોધો..." 
-        class="w-full bg-white border border-slate-300 rounded-2xl py-3 pl-10 pr-10 text-xs shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-600">
-      <button onclick="clearSearch()" id="clearSearchBtn" class="hidden absolute right-3.5 top-3.5 text-slate-400">
-        <i class="fa-solid fa-xmark text-sm"></i>
-      </button>
+  <div class="container">
+    <input type="text" id="searchInput" class="search-box" placeholder="કંપની અથવા ડ્રોઈંગનું નામ / નંબર / Revision શોધો..." />
+    <div id="breadcrumb" class="breadcrumb" style="display:none">
+      <button class="btn-outline btn-sm" id="btnBack">← બધી કંપનીઓ</button>
+      <span id="currentCompanyLabel" style="font-weight:700;"></span>
+      <button class="btn-primary btn-sm" id="btnAddDrawing" style="margin-left:auto;">+ નવું ડ્રોઈંગ ઉમેરો</button>
     </div>
+    <div id="contentArea"></div>
+  </div>
 
-    <!-- ૧. મુખ્ય હોમ પેજ: કંપની ફોલ્ડર્સ -->
-    <div id="viewAllCompanies" class="space-y-3">
-      <div class="flex justify-between items-center">
-        <div>
-          <h2 class="text-sm font-black text-slate-900 flex items-center gap-1.5">
-            <i class="fa-solid fa-folder-closed text-amber-500"></i> કંપની ફોલ્ડર્સ
-          </h2>
-          <p class="text-[11px] text-slate-500">જે કંપની ખોલશો માત્ર તેના જ ડ્રોઇંગ્સ દેખાશે</p>
-        </div>
-        <button onclick="openAddCompanyModal()" class="bg-blue-700 hover:bg-blue-800 text-white font-bold px-3 py-2 rounded-xl text-xs shadow-sm flex items-center gap-1.5">
-          <i class="fa-solid fa-plus text-amber-300"></i> નવી કંપની
-        </button>
+  <!-- Add / Edit Company Modal -->
+  <div class="modal-backdrop" id="companyModal">
+    <div class="modal">
+      <h3 id="companyModalTitle">નવી કંપની ઉમેરો</h3>
+      <div class="field">
+        <label>કંપનીનું નામ *</label>
+        <input type="text" id="companyNameInput" placeholder="દા.ત. Sagar / Reliance / Tata" />
       </div>
-
-      <div class="space-y-2.5" id="companyFoldersList">
-        <!-- કંપની ફોલ્ડર્સ અહીં લોડ થશે -->
+      <div class="field">
+        <label>નોંધ (વૈકલ્પિક)</label>
+        <input type="text" id="companyNoteInput" placeholder="દા.ત. Grinding / CNC / Fabrication" />
       </div>
-    </div>
-
-    <!-- ૨. પસંદ કરેલ કંપનીનું પર્સનલ પેજ (જેમાં માત્ર તે જ કંપની દેખાશે) -->
-    <div id="viewSingleCompany" class="hidden space-y-3">
-      <div class="bg-gradient-to-r from-blue-900 to-indigo-950 text-white p-4 rounded-2xl shadow-md space-y-2.5">
-        <div class="flex justify-between items-center">
-          <button onclick="closeCompanyFolder()" class="bg-white/20 hover:bg-white/30 text-white text-xs font-bold px-3 py-1.5 rounded-xl flex items-center gap-1.5">
-            <i class="fa-solid fa-arrow-left"></i> ⬅️ પાછા જાઓ
-          </button>
-          <span class="text-[11px] bg-cyan-400/20 text-cyan-200 px-2.5 py-0.5 rounded-full font-bold border border-cyan-300/30" id="currentCompBadge">
-            ૦ ડ્રોઈંગ્સ
-          </span>
-        </div>
-        <div>
-          <h2 class="text-lg font-black text-amber-300 flex items-center gap-2" id="currentCompTitle">
-            કંપની
-          </h2>
-          <p class="text-xs text-slate-300 font-medium" id="currentCompPhone"></p>
-        </div>
-        <button onclick="openAddDrawingForThisCompany()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 rounded-xl text-xs shadow flex items-center justify-center gap-2">
-          <i class="fa-solid fa-plus text-sm"></i> આ કંપનીમાં નવું ડ્રોઈંગ ઉમેરો
-        </button>
-      </div>
-
-      <!-- માત્ર આ જ કંપનીના ડ્રોઈંગ્સ -->
-      <div class="space-y-3" id="singleCompanyDrawings">
-      </div>
-    </div>
-
-  </main>
-
-  <!-- મોડલ: નવી કંપની -->
-  <div id="addCompanyModal" class="hidden fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
-    <div class="bg-white rounded-3xl max-w-md w-full p-5 shadow-2xl border border-slate-200 space-y-4">
-      <div class="flex justify-between items-center border-b border-slate-100 pb-3">
-        <h3 class="font-black text-slate-900 text-sm flex items-center gap-2">
-          <i class="fa-solid fa-building text-blue-700"></i> નવી કંપની ઉમેરો
-        </h3>
-        <button onclick="closeAddCompanyModal()" class="text-slate-400"><i class="fa-solid fa-xmark text-lg"></i></button>
-      </div>
-      <div class="space-y-3 text-xs">
-        <div>
-          <label class="block font-bold text-slate-700 mb-1">કંપનીનું પૂરું નામ *</label>
-          <input type="text" id="newCompanyNameInput" placeholder="દા.ત. NEW MECH / SAINATH" class="w-full border border-slate-300 rounded-xl p-2.5">
-        </div>
-        <div>
-          <label class="block font-bold text-slate-700 mb-1">સંપર્ક / ફોન નંબર (મરજિયાત)</label>
-          <input type="text" id="newCompanyPhoneInput" placeholder="મોબાઇલ નંબર" class="w-full border border-slate-300 rounded-xl p-2.5">
-        </div>
-      </div>
-      <div class="pt-2 flex gap-2 text-xs">
-        <button onclick="saveCompany()" class="flex-1 bg-blue-700 text-white font-bold py-2.5 rounded-xl shadow">સેવ કરો</button>
-        <button onclick="closeAddCompanyModal()" class="px-4 bg-slate-200 font-bold py-2.5 rounded-xl">રદ</button>
+      <div style="display:flex; gap:8px; justify-content:flex-end;">
+        <button class="btn-outline" data-close="companyModal">રદ કરો</button>
+        <button class="btn-primary" id="saveCompanyBtn">સાચવો</button>
       </div>
     </div>
   </div>
 
-  <!-- મોડલ: નવું ડ્રોઈંગ -->
-  <div id="addDrawingModal" class="hidden fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
-    <div class="bg-white rounded-3xl max-w-md w-full max-h-[90vh] overflow-y-auto p-5 shadow-2xl border border-slate-200 space-y-4">
-      <div class="flex justify-between items-center border-b border-slate-100 pb-3">
-        <h3 class="font-black text-slate-900 text-sm flex items-center gap-2">
-          <i class="fa-solid fa-file-circle-plus text-emerald-600"></i> નવું ડ્રોઈંગ સેવ કરો
-        </h3>
-        <button onclick="closeAddDrawingModal()" class="text-slate-400"><i class="fa-solid fa-xmark text-lg"></i></button>
+  <!-- Add Drawing Modal -->
+  <div class="modal-backdrop" id="drawingModal">
+    <div class="modal">
+      <h3>નવું ડ્રોઈંગ સેવ કરો</h3>
+      <div class="field">
+        <label>ડ્રોઈંગનું નામ / નંબર *</label>
+        <input type="text" id="drawingTitleInput" placeholder="દા.ત. DRG-102 Shaft Grinding" />
       </div>
-      <div class="space-y-3 text-xs">
-        <div>
-          <label class="block font-bold text-slate-700 mb-1">કંપનીનું નામ</label>
-          <input type="text" id="formCompanyName" readonly class="w-full bg-slate-100 border border-slate-300 rounded-xl p-2.5 font-bold text-blue-900">
-        </div>
-        <div>
-          <label class="block font-bold text-slate-700 mb-1">ડ્રોઈંગ નંબર અથવા પાર્ટનું નામ *</label>
-          <input type="text" id="inputTitle" placeholder="દા.ત. S.S SHAFT / OP-126" class="w-full border border-slate-300 rounded-xl p-2.5">
-        </div>
-        <div>
-          <label class="block font-bold text-slate-700 mb-1">નોંધ / સાઈઝ (મરજિયાત)</label>
-          <textarea id="inputNotes" rows="2" placeholder="દા.ત. 35/60/20..." class="w-full border border-slate-300 rounded-xl p-2.5"></textarea>
-        </div>
-        <div>
-          <label class="block font-bold text-slate-700 mb-1">ડ્રોઈંગનો ફોટો અથવા PDF ફાઈલ *</label>
-          <div class="border-2 border-dashed border-emerald-300 rounded-2xl p-4 text-center bg-emerald-50/50 relative">
-            <input type="file" id="inputFile" accept="image/*,application/pdf" onchange="handleFileSelect(event)" class="absolute inset-0 opacity-0 w-full h-full cursor-pointer">
-            <div id="fileUploadPrompt">
-              <i class="fa-solid fa-cloud-arrow-up text-3xl text-emerald-500 mb-1.5"></i>
-              <p class="font-bold text-slate-700 text-xs">ફોટો પાડો અથવા ફાઈલ પસંદ કરો</p>
-              <p class="text-[10px] text-slate-500">JPG, PNG અથવા PDF</p>
-            </div>
-            <div id="fileSelectedPreview" class="hidden text-left bg-white p-2.5 rounded-xl border border-emerald-200 flex items-center gap-2">
-              <span id="previewIcon" class="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-600 flex items-center justify-center font-bold"></span>
-              <div class="overflow-hidden">
-                <p id="previewFileName" class="font-bold text-slate-800 truncate text-[11px]"></p>
-                <p id="previewFileSize" class="text-[10px] text-slate-500"></p>
-              </div>
-            </div>
-          </div>
-        </div>
+      <div class="field">
+        <label>Revision</label>
+        <select id="drawingRevInput">
+          <option value="Rev 0">Rev 0</option>
+          <option value="Rev 1">Rev 1</option>
+          <option value="Rev 2">Rev 2</option>
+          <option value="Final">Final</option>
+        </select>
       </div>
-      <div class="pt-2 flex gap-2 text-xs">
-        <button onclick="saveDrawing()" class="flex-1 bg-emerald-600 text-white font-bold py-2.5 rounded-xl shadow">સેવ કરો</button>
-        <button onclick="closeAddDrawingModal()" class="px-4 bg-slate-200 font-bold py-2.5 rounded-xl">રદ</button>
+      <div class="field">
+        <label>ફાઈલ પસંદ કરો (JPG, PNG અથવા PDF) *</label>
+        <input type="file" id="drawingFileInput" accept="image/*,application/pdf" />
+      </div>
+      <div style="display:flex; gap:8px; justify-content:flex-end;">
+        <button class="btn-outline" data-close="drawingModal">રદ કરો</button>
+        <button class="btn-primary" id="saveDrawingBtn">ડ્રોઈંગ સાચવો</button>
       </div>
     </div>
   </div>
 
-  <!-- મોડલ: ફાઈલ વ્યૂઅર -->
-  <div id="viewModal" class="hidden fixed inset-0 bg-black/95 z-50 flex flex-col p-3 backdrop-blur-md">
-    <div class="flex justify-between items-center text-white pb-3 border-b border-white/20">
-      <div>
-        <h4 id="viewModalTitle" class="font-bold text-sm truncate max-w-xs"></h4>
-        <p id="viewModalCompany" class="text-[11px] text-amber-300 font-semibold"></p>
+  <!-- View Drawing Modal -->
+  <div class="modal-backdrop" id="viewerModal">
+    <div class="modal">
+      <h3 id="viewerTitle"></h3>
+      <p class="meta" id="viewerMeta" style="margin-bottom:10px;"></p>
+      <div class="viewer-toolbar" id="imgControls">
+        <button class="btn-outline btn-sm" id="zoomInBtn">🔍 +</button>
+        <button class="btn-outline btn-sm" id="zoomOutBtn">🔍 −</button>
+        <button class="btn-outline btn-sm" id="rotateBtn">↻ 90°</button>
+        <button class="btn-outline btn-sm" id="resetViewBtn">Reset</button>
       </div>
-      <div class="flex items-center gap-2">
-        <a id="viewDownloadBtn" href="#" download="" class="bg-white/20 px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1">
-          <i class="fa-solid fa-download"></i> સાચવો
-        </a>
-        <button onclick="closeViewModal()" class="text-white px-2 py-1 text-lg"><i class="fa-solid fa-xmark"></i></button>
+      <div class="viewer-stage" id="viewerBody"></div>
+      <div style="display:flex; gap:8px; flex-wrap:wrap; justify-content:space-between; margin-top:12px;">
+        <div style="display:flex; gap:8px; flex-wrap:wrap;">
+          <button class="btn-wa btn-sm" id="shareWaBtn">WhatsApp Share</button>
+          <a id="downloadDrawingLink" class="btn btn-primary btn-sm" download>ડાઉનલોડ</a>
+        </div>
+        <button class="btn-outline btn-sm" data-close="viewerModal">બંધ કરો</button>
       </div>
     </div>
-    <div class="flex-1 overflow-auto flex items-center justify-center p-2" id="viewModalBody"></div>
   </div>
 
-  <!-- મોડલ: બેકઅપ -->
-  <div id="backupModal" class="hidden fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
-    <div class="bg-white rounded-3xl max-w-md w-full p-5 shadow-2xl border border-slate-200 space-y-4 text-xs">
-      <div class="flex justify-between items-center border-b border-slate-100 pb-2">
-        <h3 class="font-black text-slate-800 text-sm flex items-center gap-1.5">
-          <i class="fa-solid fa-shield-halved text-emerald-600"></i> ડેટા સુરક્ષા અને બેકઅપ
-        </h3>
-        <button onclick="closeBackupModal()" class="text-slate-400"><i class="fa-solid fa-xmark"></i></button>
-      </div>
-      <p class="text-slate-600 leading-relaxed">તમારા તમામ ડ્રોઇંગ્સ ફોનમાં સુરક્ષિત છે. જો ફોન બદલવો હોય તો અહીંથી ફાઈલ ડાઉનલોડ કરી સાચવી શકો છો.</p>
-      <div class="space-y-2 pt-1">
-        <button onclick="exportBackupData()" class="w-full bg-emerald-600 text-white font-bold py-2.5 rounded-xl shadow flex items-center justify-center gap-2">
-          <i class="fa-solid fa-download"></i> બેકઅપ ફાઈલ ડાઉનલોડ કરો
-        </button>
-        <label class="w-full bg-blue-700 text-white font-bold py-2.5 rounded-xl shadow flex items-center justify-center gap-2 cursor-pointer">
-          <i class="fa-solid fa-upload"></i> બેકઅપ ફાઈલ અપલોડ કરો
-          <input type="file" accept=".json" onchange="importBackupData(event)" class="hidden">
-        </label>
-      </div>
-    </div>
-  </div>
+  <div class="toast" id="toast"></div>
 
   <script>
+    const DB_NAME = "SGW_DrawingManager_DB";
+    const DB_VERSION = 1;
     let db;
-    let selectedFileData = null;
-    let activeCompany = null; // હાલમાં કઈ કંપની ખોલેલી છે
+    let companies = [];
+    let drawings = [];
+    let selectedCompanyId = null;
+    let editingCompanyId = null;
+    let currentViewingDrawing = null;
+    let zoomLevel = 1;
+    let rotationDeg = 0;
 
-    // ફોનનું બેક બટન દબાવવાથી ફોલ્ડર બંધ થાય તે માટે
-    window.addEventListener('popstate', function() {
-      if (!document.getElementById('viewModal').classList.contains('hidden')) {
-        closeViewModal();
-        return;
-      }
-      if (!document.getElementById('addDrawingModal').classList.contains('hidden')) {
-        closeAddDrawingModal();
-        return;
-      }
-      if (!document.getElementById('addCompanyModal').classList.contains('hidden')) {
-        closeAddCompanyModal();
-        return;
-      }
-      if (!document.getElementById('backupModal').classList.contains('hidden')) {
-        closeBackupModal();
-        return;
-      }
-      if (activeCompany) {
-        closeCompanyFolder();
-      }
-    });
-
-    const request = indexedDB.open("DrawingManagerMasterDB", 2);
-    request.onupgradeneeded = function(e) {
-      db = e.target.result;
-      if (!db.objectStoreNames.contains("companies")) {
-        db.createObjectStore("companies", { keyPath: "id", autoIncrement: true });
-      }
-      if (!db.objectStoreNames.contains("drawings")) {
-        const dStore = db.createObjectStore("drawings", { keyPath: "id", autoIncrement: true });
-        dStore.createIndex("company", "company", { unique: false });
-      }
-    };
-    request.onsuccess = function(e) {
-      db = e.target.result;
-      loadAllData();
-    };
-
-    function saveCompany() {
-      const name = document.getElementById('newCompanyNameInput').value.trim();
-      const phone = document.getElementById('newCompanyPhoneInput').value.trim();
-      if (!name) { alert("કંપનીનું નામ લખો!"); return; }
-
-      const tx = db.transaction(["companies"], "readwrite");
-      tx.objectStore("companies").add({ name: name, phone: phone, date: new Date().toLocaleDateString('gu-IN') });
-      tx.oncomplete = function() {
-        alert(`કંપની "${name}" ઉમેરાઈ ગઈ! ✔`);
-        closeAddCompanyModal();
-        loadAllData();
-      };
+    function showToast(msg) {
+      const t = document.getElementById("toast");
+      t.textContent = msg;
+      t.style.display = "block";
+      clearTimeout(window._toastTimer);
+      window._toastTimer = setTimeout(() => (t.style.display = "none"), 2600);
     }
 
-    function saveDrawing() {
-      const title = document.getElementById('inputTitle').value.trim();
-      const notes = document.getElementById('inputNotes').value.trim();
-
-      if (!activeCompany) { alert("કંપની પસંદ થયેલ નથી!"); return; }
-      if (!title) { alert("ડ્રોઈંગનું નામ / નંબર લખો!"); return; }
-      if (!selectedFileData) { alert("ફોટો અથવા PDF પસંદ કરો!"); return; }
-
-      const newRecord = {
-        company: activeCompany,
-        title: title,
-        notes: notes,
-        file: selectedFileData,
-        date: new Date().toLocaleDateString('gu-IN', { day: 'numeric', month: 'short', year: 'numeric' })
-      };
-
-      const tx = db.transaction(["drawings"], "readwrite");
-      tx.objectStore("drawings").add(newRecord);
-      tx.oncomplete = function() {
-        alert("ડ્રોઈંગ સેવ થઈ ગયું! ✔");
-        closeAddDrawingModal();
-        loadAllData();
-      };
-    }
-
-    function loadAllData() {
-      if (!db) return;
-      const txComp = db.transaction(["companies"], "readonly");
-      const compReq = txComp.objectStore("companies").getAll();
-
-      compReq.onsuccess = function() {
-        const storedCompanies = compReq.result || [];
-        const txDrg = db.transaction(["drawings"], "readonly");
-        const drgReq = txDrg.objectStore("drawings").getAll();
-
-        drgReq.onsuccess = function() {
-          const drawings = drgReq.result || [];
-
-          // કંપનીઓ આપમેળે શોધી લેવી (કોઈ પણ ડેટા છૂટે નહીં)
-          const compMap = new Map();
-          storedCompanies.forEach(c => compMap.set(c.name, c));
-          drawings.forEach(d => {
-            if (d.company && !compMap.has(d.company)) {
-              compMap.set(d.company, { id: 'auto_' + Math.random(), name: d.company, phone: '' });
-            }
-          });
-
-          const allCompanies = Array.from(compMap.values());
-
-          if (activeCompany) {
-            renderSingleCompanyView(allCompanies, drawings);
-          } else {
-            renderCompanyFolders(allCompanies, drawings);
+    function openDB() {
+      return new Promise((resolve, reject) => {
+        const req = indexedDB.open(DB_NAME, DB_VERSION);
+        req.onupgradeneeded = (e) => {
+          const d = e.target.result;
+          if (!d.objectStoreNames.contains("companies")) {
+            d.createObjectStore("companies", { keyPath: "id" });
+          }
+          if (!d.objectStoreNames.contains("drawings")) {
+            const ds = d.createObjectStore("drawings", { keyPath: "id" });
+            ds.createIndex("companyId", "companyId", { unique: false });
           }
         };
-      };
-    }
-
-    // ૧. મુખ્ય હોમ પેજ: માત્ર કંપનીઓના ફોલ્ડર્સ
-    function renderCompanyFolders(companies, drawings) {
-      document.getElementById('viewAllCompanies').classList.remove('hidden');
-      document.getElementById('viewSingleCompany').classList.add('hidden');
-
-      const container = document.getElementById('companyFoldersList');
-      container.innerHTML = '';
-      const query = document.getElementById('searchInput').value.trim().toLowerCase();
-
-      const filtered = companies.filter(c => c.name.toLowerCase().includes(query));
-
-      if (filtered.length === 0) {
-        container.innerHTML = `
-          <div class="bg-white rounded-3xl p-8 text-center border border-slate-200">
-            <i class="fa-solid fa-folder-open text-4xl text-slate-300 mb-2"></i>
-            <p class="font-bold text-slate-700 text-sm">કોઈ કંપની નથી</p>
-          </div>
-        `;
-        return;
-      }
-
-      filtered.forEach(c => {
-        const count = drawings.filter(d => d.company === c.name).length;
-        const card = document.createElement('div');
-        card.className = "bg-white p-3.5 rounded-2xl border border-slate-200 shadow-sm flex justify-between items-center cursor-pointer active:scale-[0.98]";
-        card.innerHTML = `
-          <div onclick="openCompanyFolder('${c.name}')" class="flex items-center gap-3 flex-1">
-            <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-900 to-slate-950 text-amber-400 flex items-center justify-center font-black text-xl border-2 border-amber-400/40 shadow-sm">
-              <i class="fa-solid fa-folder"></i>
-            </div>
-            <div>
-              <h4 class="font-bold text-slate-900 text-sm">${c.name}</h4>
-              <p class="text-xs font-semibold text-blue-700 mt-0.5">
-                <i class="fa-solid fa-file-lines text-amber-500 text-[11px]"></i> ${count} ડ્રોઈંગ્સ સંગ્રહિત
-              </p>
-              ${c.phone ? `<p class="text-[11px] text-slate-400">${c.phone}</p>` : ''}
-            </div>
-          </div>
-          <div class="flex items-center gap-1.5">
-            <button onclick="event.stopPropagation(); deleteCompany('${c.id}', '${c.name}')" class="w-8 h-8 rounded-xl bg-red-50 text-red-600 flex items-center justify-center text-xs">
-              <i class="fa-solid fa-trash"></i>
-            </button>
-            <span class="text-slate-300 text-sm ml-1"><i class="fa-solid fa-chevron-right"></i></span>
-          </div>
-        `;
-        container.appendChild(card);
+        req.onsuccess = () => { db = req.result; resolve(db); };
+        req.onerror = () => reject(req.error);
       });
     }
 
-    // ૨. કંપની ખોલવી (માત્ર તે જ કંપની દેખાશે)
-    function openCompanyFolder(compName) {
-      activeCompany = compName;
-      document.getElementById('searchInput').value = '';
-      document.getElementById('clearSearchBtn').classList.add('hidden');
-      history.pushState({ view: 'company', name: compName }, '');
-      loadAllData();
+    function txGetAll(storeName) {
+      return new Promise((resolve, reject) => {
+        const tx = db.transaction(storeName, "readonly");
+        const req = tx.objectStore(storeName).getAll();
+        req.onsuccess = () => resolve(req.result || []);
+        req.onerror = () => reject(req.error);
+      });
     }
 
-    function closeCompanyFolder() {
-      activeCompany = null;
-      loadAllData();
+    function txPut(storeName, item) {
+      return new Promise((resolve, reject) => {
+        const tx = db.transaction(storeName, "readwrite");
+        const req = tx.objectStore(storeName).put(item);
+        req.onsuccess = () => resolve();
+        req.onerror = () => reject(req.error);
+      });
     }
 
-    // માત્ર તે જ કંપનીના ડ્રોઈંગ્સ બતાવવા
-    function renderSingleCompanyView(companies, drawings) {
-      document.getElementById('viewAllCompanies').classList.add('hidden');
-      document.getElementById('viewSingleCompany').classList.remove('hidden');
+    function txDelete(storeName, id) {
+      return new Promise((resolve, reject) => {
+        const tx = db.transaction(storeName, "readwrite");
+        const req = tx.objectStore(storeName).delete(id);
+        req.onsuccess = () => resolve();
+        req.onerror = () => reject(req.error);
+      });
+    }
 
-      const compObj = companies.find(c => c.name === activeCompany);
-      document.getElementById('currentCompTitle').innerHTML = `<i class="fa-solid fa-folder-open text-amber-400 mr-1.5"></i> ${activeCompany}`;
-      document.getElementById('currentCompPhone').innerText = compObj && compObj.phone ? `સંપર્ક: ${compObj.phone}` : '';
+    async function refreshData() {
+      companies = await txGetAll("companies");
+      drawings = await txGetAll("drawings");
+      document.getElementById("headerStats").textContent =
+        `ડ્રોઈંગ & PDF મેનેજર • ${companies.length} કંપની • ${drawings.length} ડ્રોઈંગ્સ`;
+      render();
+    }
 
-      // માત્ર આ જ કંપનીના ડ્રોઈંગ્સ ફિલ્ટર
-      const query = document.getElementById('searchInput').value.trim().toLowerCase();
-      const thisDrawings = drawings.filter(d => d.company === activeCompany && (d.title.toLowerCase().includes(query) || (d.notes && d.notes.toLowerCase().includes(query))));
+    function render() {
+      const q = document.getElementById("searchInput").value.trim().toLowerCase();
+      const area = document.getElementById("contentArea");
+      const bc = document.getElementById("breadcrumb");
 
-      document.getElementById('currentCompBadge').innerText = `${thisDrawings.length} ડ્રોઈંગ્સ`;
-
-      const container = document.getElementById('singleCompanyDrawings');
-      container.innerHTML = '';
-
-      if (thisDrawings.length === 0) {
-        container.innerHTML = `
-          <div class="bg-white rounded-3xl p-8 text-center border border-slate-200">
-            <i class="fa-solid fa-file-circle-question text-4xl text-slate-300 mb-2"></i>
-            <p class="font-bold text-slate-700 text-sm">આ કંપનીમાં હજુ કોઈ ડ્રોઈંગ નથી</p>
-            <p class="text-xs text-slate-400 mt-1">ઉપર આપેલા લીલા બટનથી ડ્રોઈંગ ઉમેરો.</p>
-          </div>
-        `;
-        return;
-      }
-
-      thisDrawings.reverse().forEach(item => {
-        const isPdf = item.file.type === "application/pdf";
-        const card = document.createElement('div');
-        card.className = "bg-white rounded-2xl p-3.5 border border-slate-200 shadow-sm flex flex-col gap-2.5";
-        card.innerHTML = `
-          <div class="flex justify-between items-start">
-            <div class="flex items-center gap-2.5">
-              <span class="w-10 h-10 rounded-xl ${isPdf ? 'bg-red-50 text-red-600 border border-red-200' : 'bg-blue-50 text-blue-700 border border-blue-200'} flex items-center justify-center font-bold text-lg">
-                <i class="fa-solid ${isPdf ? 'fa-file-pdf' : 'fa-image'}"></i>
-              </span>
+      if (!selectedCompanyId) {
+        bc.style.display = "none";
+        const filtered = companies.filter(c =>
+          c.name.toLowerCase().includes(q) || (c.note || "").toLowerCase().includes(q)
+        );
+        if (!filtered.length) {
+          area.innerHTML = `<div class="empty">કોઈ કંપની મળી નથી. ઉપર <b>"+ નવી કંપની"</b> બટન દબાવીને ફોલ્ડર બનાવો.</div>`;
+          return;
+        }
+        area.innerHTML = `<div class="grid">${filtered.map(c => {
+          const count = drawings.filter(d => d.companyId === c.id).length;
+          return `
+            <div class="card">
               <div>
-                <h4 class="font-bold text-slate-900 text-sm">${item.title}</h4>
-                <p class="text-[11px] text-slate-400 font-semibold">${item.date}</p>
+                <h3 class="folder-title" onclick="selectCompany('${c.id}')">📁 ${escapeHtml(c.name)}</h3>
+                ${c.note ? `<div class="meta">${escapeHtml(c.note)}</div>` : ""}
+                <div class="meta" style="margin-top:6px;">${count} ડ્રોઈંગ્સ</div>
               </div>
-            </div>
-            <span class="text-[10px] text-blue-800 font-bold bg-blue-50 border border-blue-200 px-2 py-0.5 rounded-lg">${isPdf ? 'PDF' : 'ફોટો'}</span>
-          </div>
+              <div class="card-actions">
+                <button class="btn-outline btn-sm" onclick="selectCompany('${c.id}')">ખોલો</button>
+                <button class="btn-outline btn-sm" onclick="editCompany('${c.id}')">એડિટ</button>
+                <button class="btn-danger btn-sm" onclick="deleteCompany('${c.id}')">ડિલીટ</button>
+              </div>
+            </div>`;
+        }).join("")}</div>`;
+      } else {
+        const comp = companies.find(c => c.id === selectedCompanyId);
+        if (!comp) { selectedCompanyId = null; render(); return; }
+        bc.style.display = "flex";
+        document.getElementById("currentCompanyLabel").textContent = `📁 ${comp.name}`;
 
-          ${item.notes ? `<p class="text-[11px] text-slate-600 bg-slate-50 p-2 rounded-xl italic">“${item.notes}”</p>` : ''}
-
-          ${!isPdf ? `
-            <div onclick="viewDrawing(${item.id})" class="h-36 w-full rounded-xl overflow-hidden bg-slate-100 border border-slate-200 cursor-pointer">
-              <img src="${item.file.dataUrl}" alt="${item.title}" class="w-full h-full object-cover">
-            </div>
-          ` : ''}
-
-          <div class="grid grid-cols-3 gap-2 pt-1 text-xs">
-            <button onclick="viewDrawing(${item.id})" class="bg-blue-50 text-blue-800 font-bold py-2 rounded-xl border border-blue-200">
-              <i class="fa-solid ${isPdf ? 'fa-file-pdf' : 'fa-eye'}"></i> ${isPdf ? 'PDF ખોલો' : 'જુઓ'}
-            </button>
-            <a href="${item.file.dataUrl}" download="${item.company}_${item.title}" class="bg-slate-50 text-slate-700 font-bold py-2 rounded-xl border border-slate-200 text-center">
-              <i class="fa-solid fa-download"></i> સાચવો
-            </a>
-            <button onclick="deleteDrawing(${item.id})" class="bg-red-50 text-red-600 font-bold py-2 rounded-xl border border-red-200">
-              <i class="fa-solid fa-trash"></i> કાઢી નાખો
-            </button>
-          </div>
-        `;
-        container.appendChild(card);
-      });
+        const list = drawings.filter(d =>
+          d.companyId === selectedCompanyId &&
+          (d.title.toLowerCase().includes(q) || (d.rev || "").toLowerCase().includes(q))
+        );
+        if (!list.length) {
+          area.innerHTML = `<div class="empty">આ કંપનીમાં હજુ કોઈ ડ્રોઈંગ નથી. <b>"+ નવું ડ્રોઈંગ ઉમેરો"</b> પર ક્લિક કરો.</div>`;
+          return;
+        }
+        area.innerHTML = `<div class="grid">${list.map(d => {
+          const isImg = d.fileType && d.fileType.startsWith("image/");
+          const thumb = isImg
+            ? `<img class="preview-thumb" src="${d.dataUrl}" alt="${escapeHtml(d.title)}" onclick="viewDrawing('${d.id}')" />`
+            : `<div class="preview-thumb" onclick="viewDrawing('${d.id}')">📄 PDF ડ્રોઈંગ</div>`;
+          return `
+            <div class="card">
+              <div>
+                ${thumb}
+                <h4 style="margin:10px 0 4px;">${escapeHtml(d.title)} <span class="badge">${escapeHtml(d.rev || "Rev 0")}</span></h4>
+                <div class="meta">${escapeHtml(d.fileName || "File")} • ${escapeHtml(d.date || "")}</div>
+              </div>
+              <div class="card-actions">
+                <button class="btn-outline btn-sm" onclick="viewDrawing('${d.id}')">જુઓ</button>
+                <a class="btn btn-primary btn-sm" href="${d.dataUrl}" download="${escapeHtml(d.fileName || d.title)}">ડાઉનલોડ</a>
+                <button class="btn-danger btn-sm" onclick="deleteDrawing('${d.id}')">ડિલીટ</button>
+              </div>
+            </div>`;
+        }).join("")}</div>`;
+      }
     }
 
-    function openAddDrawingForThisCompany() {
-      document.getElementById('formCompanyName').value = activeCompany;
-      document.getElementById('inputTitle').value = '';
-      document.getElementById('inputNotes').value = '';
-      document.getElementById('inputFile').value = '';
-      selectedFileData = null;
-      document.getElementById('fileUploadPrompt').classList.remove('hidden');
-      document.getElementById('fileSelectedPreview').classList.add('hidden');
-      document.getElementById('addDrawingModal').classList.remove('hidden');
+    function escapeHtml(str) {
+      return String(str || "").replace(/[&<>"']/g, m => ({
+        "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+      }[m]));
     }
 
-    function handleSearch() {
-      const q = document.getElementById('searchInput').value.trim();
-      document.getElementById('clearSearchBtn').classList.toggle('hidden', q === '');
-      loadAllData();
+    window.selectCompany = (id) => { selectedCompanyId = id; render(); };
+
+    window.editCompany = (id) => {
+      const comp = companies.find(c => c.id === id);
+      if (!comp) return;
+      editingCompanyId = id;
+      document.getElementById("companyModalTitle").textContent = "કંપનીની માહિતી બદલો";
+      document.getElementById("companyNameInput").value = comp.name;
+      document.getElementById("companyNoteInput").value = comp.note || "";
+      document.getElementById("companyModal").classList.add("open");
+    };
+
+    window.deleteCompany = async (id) => {
+      const comp = companies.find(c => c.id === id);
+      if (!confirm(`શું તમે "${comp?.name || "આ કંપની"}" અને તેના બધા ડ્રોઈંગ્સ ડિલીટ કરવા માંગો છો?`)) return;
+      const related = drawings.filter(d => d.companyId === id);
+      for (const d of related) await txDelete("drawings", d.id);
+      await txDelete("companies", id);
+      showToast("કંપની અને ડ્રોઈંગ્સ ડિલીટ થયા");
+      await refreshData();
+    };
+
+    window.deleteDrawing = async (id) => {
+      if (!confirm("શું તમે આ ડ્રોઈંગ ડિલીટ કરવા માંગો છો?")) return;
+      await txDelete("drawings", id);
+      showToast("ડ્રોઈંગ ડિલીટ થયું");
+      await refreshData();
+    };
+
+    function applyTransform() {
+      const img = document.getElementById("activeViewerImg");
+      if (img) {
+        img.style.transform = `scale(${zoomLevel}) rotate(${rotationDeg}deg)`;
+      }
     }
 
-    function clearSearch() {
-      document.getElementById('searchInput').value = '';
-      document.getElementById('clearSearchBtn').classList.add('hidden');
-      loadAllData();
-    }
+    window.viewDrawing = (id) => {
+      const d = drawings.find(x => x.id === id);
+      if (!d) return;
+      currentViewingDrawing = d;
+      zoomLevel = 1;
+      rotationDeg = 0;
 
-    function handleFileSelect(e) {
-      const file = e.target.files[0];
-      if (!file) return;
+      document.getElementById("viewerTitle").textContent = `${d.title} (${d.rev || "Rev 0"})`;
+      document.getElementById("viewerMeta").textContent = `${d.fileName || ""} • ${d.date || ""}`;
+
+      const isImg = d.fileType && d.fileType.startsWith("image/");
+      document.getElementById("imgControls").style.display = isImg ? "flex" : "none";
+
+      const body = document.getElementById("viewerBody");
+      if (isImg) {
+        body.innerHTML = `<img id="activeViewerImg" class="viewer-img" src="${d.dataUrl}" alt="${escapeHtml(d.title)}" />`;
+      } else {
+        body.innerHTML = `<iframe src="${d.dataUrl}" style="width:100%; height:100%; border:none;"></iframe>`;
+      }
+
+      const dl = document.getElementById("downloadDrawingLink");
+      dl.href = d.dataUrl;
+      dl.download = d.fileName || `${d.title}.pdf`;
+      document.getElementById("viewerModal").classList.add("open");
+    };
+
+    document.getElementById("zoomInBtn").onclick = () => { zoomLevel = Math.min(3.5, +(zoomLevel + 0.25).toFixed(2)); applyTransform(); };
+    document.getElementById("zoomOutBtn").onclick = () => { zoomLevel = Math.max(0.5, +(zoomLevel - 0.25).toFixed(2)); applyTransform(); };
+    document.getElementById("rotateBtn").onclick = () => { rotationDeg = (rotationDeg + 90) % 360; applyTransform(); };
+    document.getElementById("resetViewBtn").onclick = () => { zoomLevel = 1; rotationDeg = 0; applyTransform(); };
+
+    document.getElementById("shareWaBtn").onclick = async () => {
+      if (!currentViewingDrawing) return;
+      const d = currentViewingDrawing;
+      const text = `SAGAR GRINDING WORKS - Drawing: ${d.title} (${d.rev || "Rev 0"})`;
+      try {
+        if (navigator.canShare && d.dataUrl) {
+          const res = await fetch(d.dataUrl);
+          const blob = await res.blob();
+          const file = new File([blob], d.fileName || "drawing", { type: blob.type || "application/octet-stream" });
+          if (navigator.canShare({ files: [file] })) {
+            await navigator.share({ title: d.title, text, files: [file] });
+            return;
+          }
+        }
+      } catch (_) {}
+      window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, "_blank");
+    };
+
+    document.getElementById("btnBack").onclick = () => { selectedCompanyId = null; render(); };
+    document.getElementById("searchInput").oninput = render;
+
+    document.getElementById("btnAddCompany").onclick = () => {
+      editingCompanyId = null;
+      document.getElementById("companyModalTitle").textContent = "નવી કંપની ઉમેરો";
+      document.getElementById("companyNameInput").value = "";
+      document.getElementById("companyNoteInput").value = "";
+      document.getElementById("companyModal").classList.add("open");
+    };
+
+    document.getElementById("saveCompanyBtn").onclick = async () => {
+      const name = document.getElementById("companyNameInput").value.trim();
+      const note = document.getElementById("companyNoteInput").value.trim();
+      if (!name) return showToast("કંપનીનું નામ લખો");
+
+      if (editingCompanyId) {
+        const existing = companies.find(c => c.id === editingCompanyId);
+        await txPut("companies", { ...existing, name, note });
+        showToast("કંપની અપડેટ થઈ");
+      } else {
+        await txPut("companies", {
+          id: "comp_" + Date.now() + "_" + Math.random().toString(36).slice(2, 6),
+          name, note, createdAt: new Date().toISOString()
+        });
+        showToast("નવી કંપની સેવ થઈ");
+      }
+      editingCompanyId = null;
+      document.getElementById("companyModal").classList.remove("open");
+      await refreshData();
+    };
+
+    document.getElementById("btnAddDrawing").onclick = () => {
+      document.getElementById("drawingTitleInput").value = "";
+      document.getElementById("drawingRevInput").value = "Rev 0";
+      document.getElementById("drawingFileInput").value = "";
+      document.getElementById("drawingModal").classList.add("open");
+    };
+
+    document.getElementById("saveDrawingBtn").onclick = async () => {
+      const title = document.getElementById("drawingTitleInput").value.trim();
+      const rev = document.getElementById("drawingRevInput").value;
+      const file = document.getElementById("drawingFileInput").files[0];
+      if (!title) return showToast("ડ્રોઈંગનું નામ લખો");
+      if (!file) return showToast("ફાઈલ પસંદ કરો");
 
       const reader = new FileReader();
-      reader.onload = function(evt) {
-        selectedFileData = {
-          dataUrl: evt.target.result,
-          name: file.name,
-          type: file.type,
-          size: (file.size / 1024).toFixed(1) + " KB"
-        };
-        document.getElementById('fileUploadPrompt').classList.add('hidden');
-        document.getElementById('fileSelectedPreview').classList.remove('hidden');
-        document.getElementById('previewFileName').innerText = file.name;
-        document.getElementById('previewFileSize').innerText = selectedFileData.size;
-        document.getElementById('previewIcon').innerHTML = file.type === "application/pdf" ? 
-          '<i class="fa-solid fa-file-pdf text-red-600"></i>' : '<i class="fa-solid fa-image text-emerald-600"></i>';
+      reader.onload = async () => {
+        await txPut("drawings", {
+          id: "drg_" + Date.now() + "_" + Math.random().toString(36).slice(2, 6),
+          companyId: selectedCompanyId,
+          title,
+          rev,
+          fileName: file.name,
+          fileType: file.type,
+          dataUrl: reader.result,
+          date: new Date().toLocaleDateString("gu-IN")
+        });
+        document.getElementById("drawingModal").classList.remove("open");
+        showToast("ડ્રોઈંગ સફળતાપૂર્વક સેવ થયું");
+        await refreshData();
       };
       reader.readAsDataURL(file);
-    }
+    };
 
-    function viewDrawing(id) {
-      const tx = db.transaction(["drawings"], "readonly");
-      const req = tx.objectStore("drawings").get(id);
-
-      req.onsuccess = function() {
-        const item = req.result;
-        if (!item) return;
-
-        document.getElementById('viewModalTitle').innerText = item.title;
-        document.getElementById('viewModalCompany').innerText = item.company;
-        const dlBtn = document.getElementById('viewDownloadBtn');
-        dlBtn.href = item.file.dataUrl;
-        dlBtn.download = `${item.company}_${item.title}`;
-
-        const body = document.getElementById('viewModalBody');
-        body.innerHTML = item.file.type === "application/pdf" ? 
-          `<iframe src="${item.file.dataUrl}" class="w-full h-[80vh] rounded-xl border border-white/20 bg-white"></iframe>` :
-          `<img src="${item.file.dataUrl}" class="max-w-full max-h-[80vh] object-contain rounded-xl">`;
-
-        document.getElementById('viewModal').classList.remove('hidden');
+    document.getElementById("btnBackup").onclick = () => {
+      const payload = {
+        app: "SAGAR_GRINDING_WORKS_DRAWING_MANAGER",
+        exportedAt: new Date().toISOString(),
+        companies,
+        drawings
       };
-    }
+      const blob = new Blob([JSON.stringify(payload)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `SGW_Drawings_Backup_${new Date().toISOString().slice(0, 10)}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+      showToast("બેકઅપ ફાઈલ ડાઉનલોડ થઈ");
+    };
 
-    function closeViewModal() {
-      document.getElementById('viewModal').classList.add('hidden');
-      document.getElementById('viewModalBody').innerHTML = '';
-    }
+    document.getElementById("btnRestore").onclick = () => {
+      document.getElementById("restoreFile").click();
+    };
 
-    function deleteCompany(id, name) {
-      if (confirm(`શું તમે કંપની "${name}" કાઢી નાખવા માંગો છો? તેના ડ્રોઇંગ્સ પણ ડિલીટ થશે.`)) {
-        const tx = db.transaction(["companies", "drawings"], "readwrite");
-        if (typeof id === 'number') tx.objectStore("companies").delete(id);
-        
-        const dStore = tx.objectStore("drawings");
-        const req = dStore.getAll();
-        req.onsuccess = function() {
-          (req.result || []).forEach(d => {
-            if (d.company === name) dStore.delete(d.id);
-          });
-        };
-        tx.oncomplete = function() { loadAllData(); };
-      }
-    }
-
-    function deleteDrawing(id) {
-      if (confirm("શું તમે આ ડ્રોઇંગ કાઢી નાખવા માંગો છો?")) {
-        const tx = db.transaction(["drawings"], "readwrite");
-        tx.objectStore("drawings").delete(id);
-        tx.oncomplete = function() { loadAllData(); };
-      }
-    }
-
-    function openAddCompanyModal() {
-      document.getElementById('newCompanyNameInput').value = '';
-      document.getElementById('newCompanyPhoneInput').value = '';
-      document.getElementById('addCompanyModal').classList.remove('hidden');
-    }
-    function closeAddCompanyModal() { document.getElementById('addCompanyModal').classList.add('hidden'); }
-    function closeAddDrawingModal() { document.getElementById('addDrawingModal').classList.add('hidden'); }
-    function openBackupModal() { document.getElementById('backupModal').classList.remove('hidden'); }
-    function closeBackupModal() { document.getElementById('backupModal').classList.add('hidden'); }
-
-    function exportBackupData() {
-      const tx = db.transaction(["companies", "drawings"], "readonly");
-      const cReq = tx.objectStore("companies").getAll();
-      const dReq = tx.objectStore("drawings").getAll();
-
-      tx.oncomplete = function() {
-        const backupObj = { companies: cReq.result, drawings: dReq.result };
-        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(backupObj));
-        const dl = document.createElement('a');
-        dl.setAttribute("href", dataStr);
-        dl.setAttribute("download", `SGW_Drawings_Backup_${new Date().toISOString().slice(0,10)}.json`);
-        document.body.appendChild(dl);
-        dl.click();
-        dl.remove();
-      };
-    }
-
-    function importBackupData(e) {
+    document.getElementById("restoreFile").onchange = async (e) => {
       const file = e.target.files[0];
       if (!file) return;
-
-      const reader = new FileReader();
-      reader.onload = function(evt) {
-        try {
-          const imported = JSON.parse(evt.target.result);
-          if (imported.companies && imported.drawings) {
-            const tx = db.transaction(["companies", "drawings"], "readwrite");
-            const cStore = tx.objectStore("companies");
-            const dStore = tx.objectStore("drawings");
-
-            imported.companies.forEach(c => { delete c.id; cStore.add(c); });
-            imported.drawings.forEach(d => { delete d.id; dStore.add(d); });
-
-            tx.oncomplete = function() {
-              alert("બેકઅપ અપલોડ થઈ ગયું! ✔");
-              closeBackupModal();
-              loadAllData();
-            };
-          }
-        } catch(err) {
-          alert("અમાન્ય ફાઈલ!");
+      try {
+        const text = await file.text();
+        const data = JSON.parse(text);
+        if (!Array.isArray(data.companies) || !Array.isArray(data.drawings)) {
+          return showToast("અમાન્ય બેકઅપ ફાઈલ");
         }
-      };
-      reader.readAsText(file);
-    }
+        for (const c of data.companies) await txPut("companies", c);
+        for (const d of data.drawings) await txPut("drawings", d);
+        showToast("બેકઅપ સફળતાપૂર્વક રીસ્ટોર થયું");
+        await refreshData();
+      } catch {
+        showToast("ફાઈલ વાંચવામાં ભૂલ થઈ");
+      }
+      e.target.value = "";
+    };
+
+    document.querySelectorAll("[data-close]").forEach(btn => {
+      btn.onclick = () => document.getElementById(btn.getAttribute("data-close")).classList.remove("open");
+    });
+
+    openDB().then(refreshData);
   </script>
 </body>
 </html>
