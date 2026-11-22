@@ -8,23 +8,24 @@
   <title>SAGAR GRINDING WORKS — ડ્રોઈંગ & PDF મેનેજર</title>
   <style>
     :root {
-      --bg: #f4f6f9;
+      --bg: #f1f5f9;
       --card: #ffffff;
-      --primary: #1e3a5f;
-      --primary-dark: #142842;
+      --card-subtle: #f8fafc;
+      --primary: #162f4d;
+      --primary-dark: #0e1f33;
       --accent: #0f766e;
-      --whatsapp: #16a34a;
+      --whatsapp: #15803d;
       --danger: #b91c1c;
-      --text: #111827;
-      --muted: #6b7280;
-      --border: #e5e7eb;
+      --text: #0f172a;
+      --muted: #64748b;
+      --border: #cbd5e1;
     }
     * { box-sizing: border-box; font-family: system-ui, -apple-system, "Noto Sans Gujarati", sans-serif; }
     body { margin: 0; background: var(--bg); color: var(--text); }
     header {
       background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-      color: #fff; padding: 16px; position: sticky; top: 0; z-index: 20;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+      color: #ffffff; padding: 16px; position: sticky; top: 0; z-index: 20;
+      box-shadow: 0 3px 10px rgba(15, 23, 42, 0.14);
     }
     .header-inner {
       max-width: 980px; margin: 0 auto; display: flex; flex-wrap: wrap;
@@ -35,72 +36,76 @@
       width: 48px; height: 48px; border-radius: 10px;
       object-fit: contain; background: #ffffff; padding: 3px; flex-shrink: 0;
     }
-    .brand h1 { margin: 0; font-size: 1.15rem; letter-spacing: 0.4px; }
-    .brand p { margin: 2px 0 0; font-size: 0.85rem; opacity: 0.92; }
+    .brand h1 { margin: 0; font-size: 1.15rem; letter-spacing: 0.4px; color: #ffffff; }
+    .brand p { margin: 2px 0 0; font-size: 0.85rem; color: #e2e8f0; }
     .header-actions { display: flex; gap: 8px; flex-wrap: wrap; }
     button, .btn {
       border: none; border-radius: 8px; padding: 9px 14px; font-size: 0.9rem;
       cursor: pointer; font-weight: 600; display: inline-flex; align-items: center; gap: 6px;
-      text-decoration: none;
+      text-decoration: none; transition: opacity 0.15s ease, transform 0.1s ease;
     }
-    .btn-primary { background: var(--accent); color: #fff; }
-    .btn-wa { background: var(--whatsapp); color: #fff; }
-    .btn-light { background: rgba(255,255,255,0.16); color: #fff; }
-    .btn-outline { background: #fff; color: var(--text); border: 1px solid var(--border); }
-    .btn-danger { background: var(--danger); color: #fff; }
-    .btn-sm { padding: 6px 10px; font-size: 0.8rem; }
+    button:active, .btn:active { transform: scale(0.98); }
+    .btn-primary { background: var(--accent); color: #ffffff; }
+    .btn-wa { background: var(--whatsapp); color: #ffffff; }
+    .btn-light { background: rgba(255, 255, 255, 0.15); color: #ffffff; border: 1px solid rgba(255, 255, 255, 0.2); }
+    .btn-outline { background: var(--card-subtle); color: var(--text); border: 1px solid var(--border); }
+    .btn-danger { background: var(--danger); color: #ffffff; }
+    .btn-sm { padding: 6px 11px; font-size: 0.82rem; }
 
     .container { max-width: 980px; margin: 18px auto; padding: 0 14px 64px; }
     .search-box {
       width: 100%; padding: 12px 14px; border-radius: 10px; border: 1px solid var(--border);
-      background: #fff; font-size: 0.95rem; margin-bottom: 14px;
+      background: var(--card); color: var(--text); font-size: 0.95rem; margin-bottom: 14px;
+      box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
     }
+    .search-box::placeholder { color: var(--muted); }
     .breadcrumb {
       display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
-      margin-bottom: 14px; font-size: 0.9rem;
+      margin-bottom: 14px; font-size: 0.92rem;
     }
     .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 14px; }
     .card {
-      background: var(--card); border: 1px solid var(--border); border-radius: 12px;
-      padding: 14px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); display: flex;
-      flex-direction: column; justify-content: space-between; gap: 10px;
+      background: var(--card); border: 1px solid #e2e8f0; border-radius: 12px;
+      padding: 14px; box-shadow: 0 2px 6px rgba(15, 23, 42, 0.05); display: flex;
+      flex-direction: column; justify-content: space-between; gap: 12px;
     }
     .folder-title { font-size: 1.05rem; font-weight: 700; color: var(--primary); margin: 0; cursor: pointer; }
-    .meta { font-size: 0.8rem; color: var(--muted); }
+    .meta { font-size: 0.82rem; color: var(--muted); }
     .badge {
       display: inline-block; background: #e6f4f1; color: var(--accent);
-      font-weight: 700; font-size: 0.74rem; padding: 2px 7px; border-radius: 999px;
+      font-weight: 700; font-size: 0.74rem; padding: 2px 8px; border-radius: 999px;
       margin-left: 6px;
     }
     .card-actions { display: flex; gap: 6px; flex-wrap: wrap; }
     .preview-thumb {
       width: 100%; height: 145px; object-fit: cover; border-radius: 8px;
-      background: #eef2f7; display: flex; align-items: center; justify-content: center;
+      background: #e2e8f0; display: flex; align-items: center; justify-content: center;
       font-weight: 700; color: var(--primary); cursor: pointer;
     }
     .empty {
-      background: #fff; border: 1px dashed #cbd5e1; border-radius: 12px;
+      background: var(--card); border: 1px dashed var(--border); border-radius: 12px;
       padding: 28px; text-align: center; color: var(--muted);
     }
 
     .modal-backdrop {
-      position: fixed; inset: 0; background: rgba(0,0,0,0.6);
+      position: fixed; inset: 0; background: rgba(15, 23, 42, 0.62);
       display: none; align-items: center; justify-content: center; z-index: 50; padding: 12px;
     }
     .modal-backdrop.open { display: flex; }
     .modal {
-      background: #fff; border-radius: 14px; width: 100%; max-width: 640px;
-      max-height: 92vh; overflow-y: auto; padding: 18px;
+      background: var(--card); color: var(--text); border-radius: 14px; width: 100%; max-width: 640px;
+      max-height: 92vh; overflow-y: auto; padding: 18px; box-shadow: 0 12px 30px rgba(15, 23, 42, 0.22);
     }
-    .modal h3 { margin: 0 0 10px; }
+    .modal h3 { margin: 0 0 10px; color: var(--primary); }
     .field { margin-bottom: 12px; }
-    .field label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 4px; }
+    .field label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 4px; color: var(--text); }
     .field input, .field select {
-      width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border); font-size: 0.95rem;
+      width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border);
+      background: var(--card-subtle); color: var(--text); font-size: 0.95rem;
     }
     .viewer-stage {
       width: 100%; height: 58vh; overflow: auto; background: #f8fafc;
-      border: 1px solid var(--border); border-radius: 10px;
+      border: 1px solid #e2e8f0; border-radius: 10px;
       display: flex; align-items: center; justify-content: center; padding: 10px;
     }
     .viewer-img {
@@ -112,8 +117,8 @@
     }
     .toast {
       position: fixed; bottom: 18px; left: 50%; transform: translateX(-50%);
-      background: #111827; color: #fff; padding: 10px 16px; border-radius: 8px;
-      font-size: 0.88rem; z-index: 100; display: none;
+      background: var(--primary-dark); color: #ffffff; padding: 10px 16px; border-radius: 8px;
+      font-size: 0.88rem; z-index: 100; display: none; box-shadow: 0 4px 12px rgba(0,0,0,0.2);
     }
   </style>
 </head>
@@ -142,10 +147,10 @@
   </header>
 
   <div class="container">
-    <input type="text" id="searchInput" class="search-box" placeholder="કંપની અથવા ડ્રોઈંગનું નામ / નંબર / Revision શોધો..." />
+    <input type="text" id="searchInput" class="search-box" placeholder="કંપની અથવા ડ્રોઈંગ શોધો..." />
     <div id="breadcrumb" class="breadcrumb" style="display:none">
       <button class="btn-outline btn-sm" id="btnBack">← બધી કંપનીઓ</button>
-      <span id="currentCompanyLabel" style="font-weight:700;"></span>
+      <span id="currentCompanyLabel" style="font-weight:700; color: var(--primary);"></span>
       <button class="btn-primary btn-sm" id="btnAddDrawing" style="margin-left:auto;">+ નવું ડ્રોઈંગ ઉમેરો</button>
     </div>
     <div id="contentArea"></div>
@@ -170,10 +175,10 @@
     </div>
   </div>
 
-  <!-- Add Drawing Modal -->
+  <!-- Add / Edit Drawing Modal -->
   <div class="modal-backdrop" id="drawingModal">
     <div class="modal">
-      <h3>નવું ડ્રોઈંગ સેવ કરો</h3>
+      <h3 id="drawingModalTitle">નવું ડ્રોઈંગ સેવ કરો</h3>
       <div class="field">
         <label>ડ્રોઈંગનું નામ / નંબર *</label>
         <input type="text" id="drawingTitleInput" placeholder="દા.ત. DRG-102 Shaft Grinding" />
@@ -187,7 +192,7 @@
           <option value="Final">Final</option>
         </select>
       </div>
-      <div class="field">
+      <div class="field" id="drawingFileField">
         <label>ફાઈલ પસંદ કરો (JPG, PNG અથવા PDF) *</label>
         <input type="file" id="drawingFileInput" accept="image/*,application/pdf" />
       </div>
@@ -230,6 +235,7 @@
     let drawings = [];
     let selectedCompanyId = null;
     let editingCompanyId = null;
+    let editingDrawingId = null;
     let currentViewingDrawing = null;
     let zoomLevel = 1;
     let rotationDeg = 0;
@@ -408,6 +414,7 @@
               </div>
               <div class="card-actions">
                 <button class="btn-outline btn-sm" onclick="viewDrawing('${d.id}')">જુઓ</button>
+                <button class="btn-outline btn-sm" onclick="editDrawing('${d.id}')">એડિટ</button>
                 <a class="btn btn-primary btn-sm" href="${d.dataUrl}" download="${escapeHtml(d.fileName || d.title)}">ડાઉનલોડ</a>
                 <button class="btn-danger btn-sm" onclick="deleteDrawing('${d.id}')">ડિલીટ</button>
               </div>
@@ -432,6 +439,18 @@
       document.getElementById("companyNameInput").value = comp.name;
       document.getElementById("companyNoteInput").value = comp.note || "";
       openModal("companyModal");
+    };
+
+    window.editDrawing = (id) => {
+      const drg = drawings.find(d => d.id === id);
+      if (!drg) return;
+      editingDrawingId = id;
+      document.getElementById("drawingModalTitle").textContent = "ડ્રોઈંગની માહિતી બદલો";
+      document.getElementById("drawingTitleInput").value = drg.title;
+      document.getElementById("drawingRevInput").value = drg.rev || "Rev 0";
+      document.getElementById("drawingFileInput").value = "";
+      document.getElementById("drawingFileField").style.display = "none";
+      openModal("drawingModal");
     };
 
     window.deleteCompany = async (id) => {
@@ -541,17 +560,32 @@
     };
 
     document.getElementById("btnAddDrawing").onclick = () => {
+      editingDrawingId = null;
+      document.getElementById("drawingModalTitle").textContent = "નવું ડ્રોઈંગ સેવ કરો";
       document.getElementById("drawingTitleInput").value = "";
       document.getElementById("drawingRevInput").value = "Rev 0";
       document.getElementById("drawingFileInput").value = "";
+      document.getElementById("drawingFileField").style.display = "block";
       openModal("drawingModal");
     };
 
     document.getElementById("saveDrawingBtn").onclick = async () => {
       const title = document.getElementById("drawingTitleInput").value.trim();
       const rev = document.getElementById("drawingRevInput").value;
-      const file = document.getElementById("drawingFileInput").files[0];
       if (!title) return showToast("ડ્રોઈંગનું નામ લખો");
+
+      if (editingDrawingId) {
+        const existing = drawings.find(d => d.id === editingDrawingId);
+        if (!existing) return;
+        await txPut("drawings", { ...existing, title, rev });
+        editingDrawingId = null;
+        closeModalWithHistory("drawingModal");
+        showToast("ડ્રોઈંગ અપડેટ થયું");
+        await refreshData();
+        return;
+      }
+
+      const file = document.getElementById("drawingFileInput").files[0];
       if (!file) return showToast("ફાઈલ પસંદ કરો");
 
       const reader = new FileReader();
