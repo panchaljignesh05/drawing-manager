@@ -37,7 +37,7 @@
       object-fit: contain; background: #ffffff; padding: 3px; flex-shrink: 0;
     }
     .brand h1 { margin: 0; font-size: 1.15rem; letter-spacing: 0.4px; color: #ffffff; }
-    .brand p { margin: 2px 0 0; font-size: 0.85rem; color: #e2e8f0; }
+    .brand p { margin: 2px 0 0; font-size: 0.82rem; color: #e2e8f0; line-height: 1.35; }
     .header-actions { display: flex; gap: 8px; flex-wrap: wrap; }
     button, .btn {
       border: none; border-radius: 8px; padding: 9px 14px; font-size: 0.9rem;
@@ -53,12 +53,30 @@
     .btn-sm { padding: 6px 11px; font-size: 0.82rem; }
 
     .container { max-width: 980px; margin: 18px auto; padding: 0 14px 64px; }
+    .toolbar-row {
+      display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-bottom: 14px;
+    }
+    .search-wrap {
+      position: relative; flex: 1 1 240px;
+    }
     .search-box {
-      width: 100%; padding: 12px 14px; border-radius: 10px; border: 1px solid var(--border);
-      background: var(--card); color: var(--text); font-size: 0.95rem; margin-bottom: 14px;
+      width: 100%; padding: 11px 38px 11px 14px; border-radius: 10px; border: 1px solid var(--border);
+      background: var(--card); color: var(--text); font-size: 0.95rem;
       box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
     }
     .search-box::placeholder { color: var(--muted); }
+    .clear-search-btn {
+      position: absolute; right: 8px; top: 50%; transform: translateY(-50%);
+      background: #e2e8f0; color: var(--text); border-radius: 999px;
+      width: 24px; height: 24px; padding: 0; font-size: 0.78rem;
+      display: none; align-items: center; justify-content: center;
+    }
+    .clear-search-btn.visible { display: inline-flex; }
+    .sort-select {
+      padding: 11px 12px; border-radius: 10px; border: 1px solid var(--border);
+      background: var(--card); color: var(--text); font-size: 0.88rem; font-weight: 600;
+      min-width: 155px;
+    }
     .breadcrumb {
       display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
       margin-bottom: 14px; font-size: 0.92rem;
@@ -147,7 +165,18 @@
   </header>
 
   <div class="container">
-    <input type="text" id="searchInput" class="search-box" placeholder="કંપની અથવા ડ્રોઈંગ શોધો..." />
+    <div class="toolbar-row">
+      <div class="search-wrap">
+        <input type="text" id="searchInput" class="search-box" placeholder="કંપની અથવા ડ્રોઈંગ શોધો..." />
+        <button type="button" id="clearSearchBtn" class="clear-search-btn" title="સાફ કરો">✕</button>
+      </div>
+      <select id="sortSelect" class="sort-select" title="ક્રમ ગોઠવો">
+        <option value="newest">નવું પહેલાં (Newest)</option>
+        <option value="oldest">જૂનું પહેલાં (Oldest)</option>
+        <option value="az">નામ પ્રમાણે (A–Z)</option>
+      </select>
+    </div>
+
     <div id="breadcrumb" class="breadcrumb" style="display:none">
       <button class="btn-outline btn-sm" id="btnBack">← બધી કંપનીઓ</button>
       <span id="currentCompanyLabel" style="font-weight:700; color: var(--primary);"></span>
@@ -193,7 +222,7 @@
         </select>
       </div>
       <div class="field" id="drawingFileField">
-        <label>ફાઈલ પસંદ કરો (JPG, PNG અથવા PDF) *</label>
+        <label id="drawingFileLabel">ફાઈલ પસંદ કરો (JPG, PNG અથવા PDF) *</label>
         <input type="file" id="drawingFileInput" accept="image/*,application/pdf" />
       </div>
       <div style="display:flex; gap:8px; justify-content:flex-end;">
@@ -230,6 +259,7 @@
   <script>
     const DB_NAME = "SGW_DrawingManager_DB";
     const DB_VERSION = 1;
+    const BACKUP_META_KEY = "SGW_Last_Backup_Date";
     let db;
     let companies = [];
     let drawings = [];
@@ -348,24 +378,54 @@
       });
     }
 
+    function estimateStorageMB() {
+      let bytes = 0;
+      for (const c of companies) bytes += JSON.stringify(c).length;
+      for (const d of drawings) bytes += JSON.stringify(d).length;
+      return (bytes / (1024 * 1024)).toFixed(1);
+    }
+
+    function updateHeaderStats() {
+      const lastBackup = localStorage.getItem(BACKUP_META_KEY);
+      const backupText = lastBackup ? `બેકઅપ: ${lastBackup}` : "બેકઅપ: બાકી";
+      const mbText = `${estimateStorageMB()} MB`;
+      document.getElementById("headerStats").textContent =
+        `ડ્રોઈંગ & PDF મેનેજર • ${companies.length} કંપની • ${drawings.length} ડ્રોઈંગ્સ • ${mbText} • ${backupText}`;
+    }
+
+    function sortItems(items) {
+      const mode = document.getElementById("sortSelect").value;
+      const copy = [...items];
+      if (mode === "az") {
+        copy.sort((a, b) => String(a.name || a.title || "").localeCompare(String(b.name || b.title || ""), "gu"));
+      } else if (mode === "oldest") {
+        copy.sort((a, b) => String(a.createdAt || a.id).localeCompare(String(b.createdAt || b.id)));
+      } else {
+        copy.sort((a, b) => String(b.createdAt || b.id).localeCompare(String(a.createdAt || a.id)));
+      }
+      return copy;
+    }
+
     async function refreshData() {
       companies = await txGetAll("companies");
       drawings = await txGetAll("drawings");
-      document.getElementById("headerStats").textContent =
-        `ડ્રોઈંગ & PDF મેનેજર • ${companies.length} કંપની • ${drawings.length} ડ્રોઈંગ્સ`;
+      updateHeaderStats();
       render();
     }
 
     function render() {
-      const q = document.getElementById("searchInput").value.trim().toLowerCase();
+      const searchEl = document.getElementById("searchInput");
+      const q = searchEl.value.trim().toLowerCase();
+      document.getElementById("clearSearchBtn").classList.toggle("visible", searchEl.value.length > 0);
+
       const area = document.getElementById("contentArea");
       const bc = document.getElementById("breadcrumb");
 
       if (!selectedCompanyId) {
         bc.style.display = "none";
-        const filtered = companies.filter(c =>
+        const filtered = sortItems(companies.filter(c =>
           c.name.toLowerCase().includes(q) || (c.note || "").toLowerCase().includes(q)
-        );
+        ));
         if (!filtered.length) {
           area.innerHTML = `<div class="empty">કોઈ કંપની મળી નથી. ઉપર <b>"+ નવી કંપની"</b> બટન દબાવીને ફોલ્ડર બનાવો.</div>`;
           return;
@@ -392,10 +452,10 @@
         bc.style.display = "flex";
         document.getElementById("currentCompanyLabel").textContent = `📁 ${comp.name}`;
 
-        const list = drawings.filter(d =>
+        const list = sortItems(drawings.filter(d =>
           d.companyId === selectedCompanyId &&
           (d.title.toLowerCase().includes(q) || (d.rev || "").toLowerCase().includes(q))
-        );
+        ));
         if (!list.length) {
           area.innerHTML = `<div class="empty">આ કંપનીમાં હજુ કોઈ ડ્રોઈંગ નથી. <b>"+ નવું ડ્રોઈંગ ઉમેરો"</b> પર ક્લિક કરો.</div>`;
           return;
@@ -449,7 +509,8 @@
       document.getElementById("drawingTitleInput").value = drg.title;
       document.getElementById("drawingRevInput").value = drg.rev || "Rev 0";
       document.getElementById("drawingFileInput").value = "";
-      document.getElementById("drawingFileField").style.display = "none";
+      document.getElementById("drawingFileLabel").textContent = "નવી ફાઈલ બદલવી હોય તો પસંદ કરો (વૈકલ્પિક)";
+      document.getElementById("drawingFileField").style.display = "block";
       openModal("drawingModal");
     };
 
@@ -529,6 +590,13 @@
 
     document.getElementById("btnBack").onclick = () => goHomeCompanies(true);
     document.getElementById("searchInput").oninput = render;
+    document.getElementById("sortSelect").onchange = render;
+    document.getElementById("clearSearchBtn").onclick = () => {
+      const s = document.getElementById("searchInput");
+      s.value = "";
+      render();
+      s.focus();
+    };
 
     document.getElementById("btnAddCompany").onclick = () => {
       editingCompanyId = null;
@@ -565,6 +633,7 @@
       document.getElementById("drawingTitleInput").value = "";
       document.getElementById("drawingRevInput").value = "Rev 0";
       document.getElementById("drawingFileInput").value = "";
+      document.getElementById("drawingFileLabel").textContent = "ફાઈલ પસંદ કરો (JPG, PNG અથવા PDF) *";
       document.getElementById("drawingFileField").style.display = "block";
       openModal("drawingModal");
     };
@@ -572,21 +641,43 @@
     document.getElementById("saveDrawingBtn").onclick = async () => {
       const title = document.getElementById("drawingTitleInput").value.trim();
       const rev = document.getElementById("drawingRevInput").value;
+      const newFile = document.getElementById("drawingFileInput").files[0];
       if (!title) return showToast("ડ્રોઈંગનું નામ લખો");
 
       if (editingDrawingId) {
         const existing = drawings.find(d => d.id === editingDrawingId);
         if (!existing) return;
-        await txPut("drawings", { ...existing, title, rev });
-        editingDrawingId = null;
-        closeModalWithHistory("drawingModal");
-        showToast("ડ્રોઈંગ અપડેટ થયું");
-        await refreshData();
+
+        const finishUpdate = async (fileObj) => {
+          await txPut("drawings", {
+            ...existing,
+            title,
+            rev,
+            fileName: fileObj ? fileObj.name : existing.fileName,
+            fileType: fileObj ? fileObj.type : existing.fileType,
+            dataUrl: fileObj ? fileObj.dataUrl : existing.dataUrl
+          });
+          editingDrawingId = null;
+          closeModalWithHistory("drawingModal");
+          showToast("ડ્રોઈંગ અપડેટ થયું");
+          await refreshData();
+        };
+
+        if (newFile) {
+          const reader = new FileReader();
+          reader.onload = () => finishUpdate({
+            name: newFile.name,
+            type: newFile.type,
+            dataUrl: reader.result
+          });
+          reader.readAsDataURL(newFile);
+        } else {
+          await finishUpdate(null);
+        }
         return;
       }
 
-      const file = document.getElementById("drawingFileInput").files[0];
-      if (!file) return showToast("ફાઈલ પસંદ કરો");
+      if (!newFile) return showToast("ફાઈલ પસંદ કરો");
 
       const reader = new FileReader();
       reader.onload = async () => {
@@ -595,16 +686,17 @@
           companyId: selectedCompanyId,
           title,
           rev,
-          fileName: file.name,
-          fileType: file.type,
+          fileName: newFile.name,
+          fileType: newFile.type,
           dataUrl: reader.result,
-          date: new Date().toLocaleDateString("gu-IN")
+          date: new Date().toLocaleDateString("gu-IN"),
+          createdAt: new Date().toISOString()
         });
         closeModalWithHistory("drawingModal");
         showToast("ડ્રોઈંગ સફળતાપૂર્વક સેવ થયું");
         await refreshData();
       };
-      reader.readAsDataURL(file);
+      reader.readAsDataURL(newFile);
     };
 
     document.getElementById("btnBackup").onclick = () => {
@@ -621,6 +713,8 @@
       a.download = `SGW_Drawings_Backup_${new Date().toISOString().slice(0, 10)}.json`;
       a.click();
       URL.revokeObjectURL(url);
+      localStorage.setItem(BACKUP_META_KEY, new Date().toLocaleDateString("gu-IN"));
+      updateHeaderStats();
       showToast("બેકઅપ ફાઈલ ડાઉનલોડ થઈ");
     };
 
