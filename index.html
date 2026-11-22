@@ -3,6 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" type="image/png" href="1e4f928e-8efe-4335-9efd-a31f71419358.png" />
+  <link rel="apple-touch-icon" href="1e4f928e-8efe-4335-9efd-a31f71419358.png" />
   <title>SAGAR GRINDING WORKS — ડ્રોઈંગ & PDF મેનેજર</title>
   <style>
     :root {
@@ -27,6 +29,11 @@
     .header-inner {
       max-width: 980px; margin: 0 auto; display: flex; flex-wrap: wrap;
       align-items: center; justify-content: space-between; gap: 12px;
+    }
+    .brand { display: flex; align-items: center; gap: 12px; }
+    .logo-img {
+      width: 48px; height: 48px; border-radius: 10px;
+      object-fit: contain; background: #ffffff; padding: 3px; flex-shrink: 0;
     }
     .brand h1 { margin: 0; font-size: 1.15rem; letter-spacing: 0.4px; }
     .brand p { margin: 2px 0 0; font-size: 0.85rem; opacity: 0.92; }
@@ -114,8 +121,16 @@
   <header>
     <div class="header-inner">
       <div class="brand">
-        <h1>SAGAR GRINDING WORKS</h1>
-        <p id="headerStats">ડ્રોઈંગ &amp; PDF મેનેજર</p>
+        <img
+          src="1e4f928e-8efe-4335-9efd-a31f71419358.png"
+          alt="SAGAR GRINDING WORKS Logo"
+          class="logo-img"
+          onerror="this.style.display='none'"
+        />
+        <div>
+          <h1>SAGAR GRINDING WORKS</h1>
+          <p id="headerStats">ડ્રોઈંગ &amp; PDF મેનેજર</p>
+        </div>
       </div>
       <div class="header-actions">
         <button class="btn-primary" id="btnAddCompany">+ નવી કંપની</button>
@@ -218,6 +233,7 @@
     let currentViewingDrawing = null;
     let zoomLevel = 1;
     let rotationDeg = 0;
+    let ignoringPop = false;
 
     function showToast(msg) {
       const t = document.getElementById("toast");
@@ -226,6 +242,60 @@
       clearTimeout(window._toastTimer);
       window._toastTimer = setTimeout(() => (t.style.display = "none"), 2600);
     }
+
+    function openModal(modalId) {
+      document.getElementById(modalId).classList.add("open");
+      history.pushState({ view: "modal", modalId }, "");
+    }
+
+    function closeModalUI(modalId) {
+      document.getElementById(modalId).classList.remove("open");
+    }
+
+    function closeModalWithHistory(modalId) {
+      const el = document.getElementById(modalId);
+      if (!el.classList.contains("open")) return;
+      el.classList.remove("open");
+      if (history.state && history.state.view === "modal" && history.state.modalId === modalId) {
+        ignoringPop = true;
+        history.back();
+      }
+    }
+
+    function openCompanyFolder(id, push = true) {
+      selectedCompanyId = id;
+      if (push) {
+        history.pushState({ view: "company", companyId: id }, "");
+      }
+      render();
+    }
+
+    function goHomeCompanies(push = false) {
+      selectedCompanyId = null;
+      if (push && history.state && history.state.view === "company") {
+        ignoringPop = true;
+        history.back();
+      }
+      render();
+    }
+
+    window.addEventListener("popstate", () => {
+      if (ignoringPop) {
+        ignoringPop = false;
+        return;
+      }
+      const openModals = ["viewerModal", "drawingModal", "companyModal"].filter(id =>
+        document.getElementById(id).classList.contains("open")
+      );
+      if (openModals.length) {
+        closeModalUI(openModals[openModals.length - 1]);
+        return;
+      }
+      if (selectedCompanyId) {
+        selectedCompanyId = null;
+        render();
+      }
+    });
 
     function openDB() {
       return new Promise((resolve, reject) => {
@@ -352,7 +422,7 @@
       }[m]));
     }
 
-    window.selectCompany = (id) => { selectedCompanyId = id; render(); };
+    window.selectCompany = (id) => openCompanyFolder(id, true);
 
     window.editCompany = (id) => {
       const comp = companies.find(c => c.id === id);
@@ -361,7 +431,7 @@
       document.getElementById("companyModalTitle").textContent = "કંપનીની માહિતી બદલો";
       document.getElementById("companyNameInput").value = comp.name;
       document.getElementById("companyNoteInput").value = comp.note || "";
-      document.getElementById("companyModal").classList.add("open");
+      openModal("companyModal");
     };
 
     window.deleteCompany = async (id) => {
@@ -370,6 +440,7 @@
       const related = drawings.filter(d => d.companyId === id);
       for (const d of related) await txDelete("drawings", d.id);
       await txDelete("companies", id);
+      if (selectedCompanyId === id) selectedCompanyId = null;
       showToast("કંપની અને ડ્રોઈંગ્સ ડિલીટ થયા");
       await refreshData();
     };
@@ -411,7 +482,7 @@
       const dl = document.getElementById("downloadDrawingLink");
       dl.href = d.dataUrl;
       dl.download = d.fileName || `${d.title}.pdf`;
-      document.getElementById("viewerModal").classList.add("open");
+      openModal("viewerModal");
     };
 
     document.getElementById("zoomInBtn").onclick = () => { zoomLevel = Math.min(3.5, +(zoomLevel + 0.25).toFixed(2)); applyTransform(); };
@@ -437,7 +508,7 @@
       window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, "_blank");
     };
 
-    document.getElementById("btnBack").onclick = () => { selectedCompanyId = null; render(); };
+    document.getElementById("btnBack").onclick = () => goHomeCompanies(true);
     document.getElementById("searchInput").oninput = render;
 
     document.getElementById("btnAddCompany").onclick = () => {
@@ -445,7 +516,7 @@
       document.getElementById("companyModalTitle").textContent = "નવી કંપની ઉમેરો";
       document.getElementById("companyNameInput").value = "";
       document.getElementById("companyNoteInput").value = "";
-      document.getElementById("companyModal").classList.add("open");
+      openModal("companyModal");
     };
 
     document.getElementById("saveCompanyBtn").onclick = async () => {
@@ -465,7 +536,7 @@
         showToast("નવી કંપની સેવ થઈ");
       }
       editingCompanyId = null;
-      document.getElementById("companyModal").classList.remove("open");
+      closeModalWithHistory("companyModal");
       await refreshData();
     };
 
@@ -473,7 +544,7 @@
       document.getElementById("drawingTitleInput").value = "";
       document.getElementById("drawingRevInput").value = "Rev 0";
       document.getElementById("drawingFileInput").value = "";
-      document.getElementById("drawingModal").classList.add("open");
+      openModal("drawingModal");
     };
 
     document.getElementById("saveDrawingBtn").onclick = async () => {
@@ -495,7 +566,7 @@
           dataUrl: reader.result,
           date: new Date().toLocaleDateString("gu-IN")
         });
-        document.getElementById("drawingModal").classList.remove("open");
+        closeModalWithHistory("drawingModal");
         showToast("ડ્રોઈંગ સફળતાપૂર્વક સેવ થયું");
         await refreshData();
       };
@@ -543,9 +614,10 @@
     };
 
     document.querySelectorAll("[data-close]").forEach(btn => {
-      btn.onclick = () => document.getElementById(btn.getAttribute("data-close")).classList.remove("open");
+      btn.onclick = () => closeModalWithHistory(btn.getAttribute("data-close"));
     });
 
+    history.replaceState({ view: "home" }, "");
     openDB().then(refreshData);
   </script>
 </body>
