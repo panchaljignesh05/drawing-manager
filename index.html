@@ -20,62 +20,98 @@
       --muted: #64748b;
       --border: #cbd5e1;
     }
+    body[data-theme="mint"] {
+      --bg: #ecfdf5;
+      --primary: #064e3b;
+      --primary-dark: #022c22;
+      --accent: #059669;
+      --border: #a7f3d0;
+    }
+    body[data-theme="sand"] {
+      --bg: #fefce8;
+      --primary: #78350f;
+      --primary-dark: #451a03;
+      --accent: #b45309;
+      --border: #fde68a;
+    }
+    body[data-theme="slate-dark"] {
+      --bg: #0f172a;
+      --card: #1e293b;
+      --card-subtle: #0f172a;
+      --primary: #1e293b;
+      --primary-dark: #020617;
+      --accent: #14b8a6;
+      --text: #f8fafc;
+      --muted: #94a3b8;
+      --border: #334155;
+    }
     * { box-sizing: border-box; font-family: system-ui, -apple-system, "Noto Sans Gujarati", sans-serif; }
-    body { margin: 0; background: var(--bg); color: var(--text); }
+    body { margin: 0; background: var(--bg); color: var(--text); transition: background 0.2s ease, color 0.2s ease; }
     header {
       background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-      color: #ffffff; padding: 16px; position: sticky; top: 0; z-index: 20;
+      color: #ffffff; padding: 12px 14px; position: sticky; top: 0; z-index: 20;
       box-shadow: 0 3px 10px rgba(15, 23, 42, 0.14);
     }
     .header-inner {
       max-width: 980px; margin: 0 auto; display: flex; flex-wrap: wrap;
-      align-items: center; justify-content: space-between; gap: 12px;
+      align-items: center; justify-content: space-between; gap: 10px;
     }
-    .brand { display: flex; align-items: center; gap: 12px; }
+    .brand { display: flex; align-items: center; gap: 10px; min-width: 0; }
     .logo-img {
-      width: 48px; height: 48px; border-radius: 10px;
+      width: 44px; height: 44px; border-radius: 10px;
       object-fit: contain; background: #ffffff; padding: 3px; flex-shrink: 0;
     }
-    .brand h1 { margin: 0; font-size: 1.15rem; letter-spacing: 0.4px; color: #ffffff; }
-    .brand p { margin: 2px 0 0; font-size: 0.82rem; color: #e2e8f0; line-height: 1.35; }
-    .header-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+    .brand h1 { margin: 0; font-size: 1.08rem; letter-spacing: 0.3px; color: #ffffff; line-height: 1.2; }
+    .header-right-cluster {
+      display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-left: auto;
+    }
+    .mini-stats-pill {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: rgba(255, 255, 255, 0.14); border: 1px solid rgba(255, 255, 255, 0.22);
+      color: #f8fafc; font-size: 0.76rem; padding: 5px 9px; border-radius: 999px;
+      white-space: nowrap;
+    }
+    .header-actions { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
     button, .btn {
-      border: none; border-radius: 8px; padding: 9px 14px; font-size: 0.9rem;
-      cursor: pointer; font-weight: 600; display: inline-flex; align-items: center; gap: 6px;
+      border: none; border-radius: 8px; padding: 8px 12px; font-size: 0.88rem;
+      cursor: pointer; font-weight: 600; display: inline-flex; align-items: center; gap: 5px;
       text-decoration: none; transition: opacity 0.15s ease, transform 0.1s ease;
     }
     button:active, .btn:active { transform: scale(0.98); }
     .btn-primary { background: var(--accent); color: #ffffff; }
     .btn-wa { background: var(--whatsapp); color: #ffffff; }
-    .btn-light { background: rgba(255, 255, 255, 0.15); color: #ffffff; border: 1px solid rgba(255, 255, 255, 0.2); }
+    .btn-light { background: rgba(255, 255, 255, 0.15); color: #ffffff; border: 1px solid rgba(255, 255, 255, 0.22); }
+    .btn-icon {
+      padding: 7px 9px; font-size: 0.85rem; border-radius: 8px;
+      background: rgba(255, 255, 255, 0.15); color: #ffffff;
+      border: 1px solid rgba(255, 255, 255, 0.22);
+    }
     .btn-outline { background: var(--card-subtle); color: var(--text); border: 1px solid var(--border); }
     .btn-danger { background: var(--danger); color: #ffffff; }
-    .btn-sm { padding: 6px 11px; font-size: 0.82rem; }
+    .btn-sm { padding: 6px 10px; font-size: 0.8rem; }
 
-    .container { max-width: 980px; margin: 18px auto; padding: 0 14px 64px; }
+    .container { max-width: 980px; margin: 16px auto; padding: 0 14px 64px; }
     .toolbar-row {
       display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-bottom: 14px;
     }
-    .search-wrap {
-      position: relative; flex: 1 1 240px;
-    }
+    .search-wrap { position: relative; flex: 1 1 220px; }
     .search-box {
-      width: 100%; padding: 11px 38px 11px 14px; border-radius: 10px; border: 1px solid var(--border);
+      width: 100%; padding: 10px 36px 10px 14px; border-radius: 10px; border: 1px solid var(--border);
       background: var(--card); color: var(--text); font-size: 0.95rem;
       box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
     }
     .search-box::placeholder { color: var(--muted); }
     .clear-search-btn {
       position: absolute; right: 8px; top: 50%; transform: translateY(-50%);
-      background: #e2e8f0; color: var(--text); border-radius: 999px;
+      background: #e2e8f0; color: #0f172a; border-radius: 999px;
       width: 24px; height: 24px; padding: 0; font-size: 0.78rem;
       display: none; align-items: center; justify-content: center;
     }
     .clear-search-btn.visible { display: inline-flex; }
     .sort-select {
-      padding: 11px 12px; border-radius: 10px; border: 1px solid var(--border);
+      padding: 10px 12px; border-radius: 10px; border: 1px solid var(--border);
       background: var(--card); color: var(--text); font-size: 0.88rem; font-weight: 600;
-      min-width: 155px;
+      min-width: 150px;
     }
     .breadcrumb {
       display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
@@ -83,22 +119,23 @@
     }
     .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 14px; }
     .card {
-      background: var(--card); border: 1px solid #e2e8f0; border-radius: 12px;
+      background: var(--card); border: 1px solid var(--border); border-radius: 12px;
       padding: 14px; box-shadow: 0 2px 6px rgba(15, 23, 42, 0.05); display: flex;
       flex-direction: column; justify-content: space-between; gap: 12px;
     }
-    .folder-title { font-size: 1.05rem; font-weight: 700; color: var(--primary); margin: 0; cursor: pointer; }
+    .folder-title { font-size: 1.05rem; font-weight: 700; color: var(--text); margin: 0; cursor: pointer; }
     .meta { font-size: 0.82rem; color: var(--muted); }
     .badge {
-      display: inline-block; background: #e6f4f1; color: var(--accent);
+      display: inline-block; background: #e6f4f1; color: #0f766e;
       font-weight: 700; font-size: 0.74rem; padding: 2px 8px; border-radius: 999px;
       margin-left: 6px;
     }
     .card-actions { display: flex; gap: 6px; flex-wrap: wrap; }
     .preview-thumb {
       width: 100%; height: 145px; object-fit: cover; border-radius: 8px;
-      background: #e2e8f0; display: flex; align-items: center; justify-content: center;
-      font-weight: 700; color: var(--primary); cursor: pointer;
+      background: var(--card-subtle); border: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 700; color: var(--text); cursor: pointer;
     }
     .empty {
       background: var(--card); border: 1px dashed var(--border); border-radius: 12px;
@@ -114,7 +151,7 @@
       background: var(--card); color: var(--text); border-radius: 14px; width: 100%; max-width: 640px;
       max-height: 92vh; overflow-y: auto; padding: 18px; box-shadow: 0 12px 30px rgba(15, 23, 42, 0.22);
     }
-    .modal h3 { margin: 0 0 10px; color: var(--primary); }
+    .modal h3 { margin: 0 0 10px; color: var(--text); }
     .field { margin-bottom: 12px; }
     .field label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 4px; color: var(--text); }
     .field input, .field select {
@@ -131,17 +168,15 @@
       background: #ffffff; border: 1px solid #e2e8f0; padding: 3px; flex-shrink: 0;
     }
     .viewer-stage {
-      width: 100%; height: 58vh; overflow: auto; background: #f8fafc;
-      border: 1px solid #e2e8f0; border-radius: 10px;
+      width: 100%; height: 58vh; overflow: auto; background: var(--card-subtle);
+      border: 1px solid var(--border); border-radius: 10px;
       display: flex; align-items: center; justify-content: center; padding: 10px;
     }
     .viewer-img {
       max-width: 100%; max-height: 100%; transition: transform 0.15s ease;
       transform-origin: center center; border-radius: 6px;
     }
-    .viewer-toolbar {
-      display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px;
-    }
+    .viewer-toolbar { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px; }
     .toast {
       position: fixed; bottom: 18px; left: 50%; transform: translateX(-50%);
       background: var(--primary-dark); color: #ffffff; padding: 10px 16px; border-radius: 8px;
@@ -156,21 +191,22 @@
         <img
           id="headerLogo"
           src="1e4f928e-8efe-4335-9efd-a31f71419358.png"
-          alt="SAGAR GRINDING WORKS Logo"
+          alt="Brand Logo"
           class="logo-img"
           onerror="this.style.display='none'"
         />
-        <div>
-          <h1 id="headerBrandName">SAGAR GRINDING WORKS</h1>
-          <p id="headerStats">ડ્રોઈંગ &amp; PDF મેનેજર</p>
-        </div>
+        <h1 id="headerBrandName">SAGAR GRINDING WORKS</h1>
       </div>
-      <div class="header-actions">
-        <button class="btn-primary" id="btnAddCompany">+ નવી કંપની</button>
-        <button class="btn-light" id="btnBrandSettings">બ્રાન્ડ / લોગો</button>
-        <button class="btn-light" id="btnBackup">બેકઅપ</button>
-        <button class="btn-light" id="btnRestore">રીસ્ટોર</button>
-        <input type="file" id="restoreFile" accept=".json,application/json" style="display:none" />
+
+      <div class="header-right-cluster">
+        <span class="mini-stats-pill" id="headerStats" title="કંપની / ડ્રોઈંગ / સ્ટોરેજ / બેકઅપ">📊 0 • 0 • 0.0 MB</span>
+        <div class="header-actions">
+          <button class="btn-primary btn-sm" id="btnAddCompany" title="નવી કંપની">+ કંપની</button>
+          <button class="btn-icon" id="btnBrandSettings" title="બ્રાન્ડ, લોગો અને થીમ">🎨</button>
+          <button class="btn-icon" id="btnBackup" title="બેકઅપ">💾</button>
+          <button class="btn-icon" id="btnRestore" title="રીસ્ટોર">♻️</button>
+          <input type="file" id="restoreFile" accept=".json,application/json" style="display:none" />
+        </div>
       </div>
     </div>
   </header>
@@ -190,16 +226,16 @@
 
     <div id="breadcrumb" class="breadcrumb" style="display:none">
       <button class="btn-outline btn-sm" id="btnBack">← બધી કંપનીઓ</button>
-      <span id="currentCompanyLabel" style="font-weight:700; color: var(--primary);"></span>
+      <span id="currentCompanyLabel" style="font-weight:700;"></span>
       <button class="btn-primary btn-sm" id="btnAddDrawing" style="margin-left:auto;">+ નવું ડ્રોઈંગ ઉમેરો</button>
     </div>
     <div id="contentArea"></div>
   </div>
 
-  <!-- Brand Name & Logo Settings Modal -->
+  <!-- Brand Name, Logo & Theme Modal -->
   <div class="modal-backdrop" id="brandModal">
     <div class="modal">
-      <h3>બિઝનેસ નામ અને લોગો બદલો</h3>
+      <h3>બિઝનેસ નામ, લોગો અને થીમ</h3>
       <div class="field">
         <label>કંપની / બિઝનેસનું નામ *</label>
         <input type="text" id="brandNameInput" placeholder="દા.ત. SAGAR GRINDING WORKS" />
@@ -208,9 +244,18 @@
         <label>લોગો / ફોટો પસંદ કરો (વૈકલ્પિક)</label>
         <input type="file" id="brandLogoInput" accept="image/*" />
       </div>
+      <div class="field">
+        <label>બેકગ્રાઉન્ડ / ટેમ્પ્લેટ કલર</label>
+        <select id="themeSelect">
+          <option value="default">Classic Navy &amp; Slate (Default)</option>
+          <option value="mint">Soft Mint &amp; Emerald</option>
+          <option value="sand">Warm Sand &amp; Amber</option>
+          <option value="slate-dark">Dark Slate Mode</option>
+        </select>
+      </div>
       <div class="brand-preview-box">
         <img id="brandPreviewImg" class="brand-preview-img" src="1e4f928e-8efe-4335-9efd-a31f71419358.png" alt="Preview" onerror="this.style.display='none'" />
-        <div class="meta">આ ફોન/બ્રાઉઝરમાં નામ અને લોગો સેવ થશે; તમારી ડ્રોઈંગ્સ સલામત રહેશે.</div>
+        <div class="meta">આ ફોન/બ્રાઉઝરમાં નામ, લોગો અને થીમ સેવ થશે; તમારી ડ્રોઈંગ્સ સલામત રહેશે.</div>
       </div>
       <div style="display:flex; gap:8px; flex-wrap:wrap; justify-content:space-between;">
         <button class="btn-danger btn-sm" id="resetBrandBtn">મૂળ (Default) કરો</button>
@@ -301,6 +346,7 @@
     const DEFAULT_BRAND_LOGO = "1e4f928e-8efe-4335-9efd-a31f71419358.png";
     const BRAND_NAME_KEY = "SGW_Brand_Name_v1";
     const BRAND_LOGO_KEY = "SGW_Brand_Logo_v1";
+    const THEME_KEY = "SGW_Theme_v1";
 
     let db;
     let companies = [];
@@ -330,9 +376,24 @@
       return localStorage.getItem(BRAND_LOGO_KEY) || DEFAULT_BRAND_LOGO;
     }
 
+    function getActiveTheme() {
+      return localStorage.getItem(THEME_KEY) || "default";
+    }
+
+    function applyTheme(theme) {
+      if (!theme || theme === "default") {
+        document.body.removeAttribute("data-theme");
+      } else {
+        document.body.setAttribute("data-theme", theme);
+      }
+    }
+
     function applyBrandSettings() {
       const name = getActiveBrandName();
       const logo = getActiveBrandLogo();
+      const theme = getActiveTheme();
+
+      applyTheme(theme);
       document.title = `${name} — ડ્રોઈંગ & PDF મેનેજર`;
       document.getElementById("headerBrandName").textContent = name;
       const logoEl = document.getElementById("headerLogo");
@@ -452,10 +513,10 @@
 
     function updateHeaderStats() {
       const lastBackup = localStorage.getItem(BACKUP_META_KEY);
-      const backupText = lastBackup ? `બેકઅપ: ${lastBackup}` : "બેકઅપ: બાકી";
       const mbText = `${estimateStorageMB()} MB`;
+      const backupShort = lastBackup ? ` • 💾 ${lastBackup}` : "";
       document.getElementById("headerStats").textContent =
-        `ડ્રોઈંગ & PDF મેનેજર • ${companies.length} કંપની • ${drawings.length} ડ્રોઈંગ્સ • ${mbText} • ${backupText}`;
+        `📁 ${companies.length} • 📄 ${drawings.length} • ${mbText}${backupShort}`;
     }
 
     function sortItems(items) {
@@ -466,7 +527,7 @@
       } else if (mode === "oldest") {
         copy.sort((a, b) => String(a.createdAt || a.id).localeCompare(String(b.createdAt || b.id)));
       } else {
-        copy.sort((a, b) => String(b.createdAt || b.id).localeCompare(String(a.createdAt || b.id)));
+        copy.sort((a, b) => String(b.createdAt || b.id).localeCompare(String(a.createdAt || a.id)));
       }
       return copy;
     }
@@ -492,7 +553,7 @@
           c.name.toLowerCase().includes(q) || (c.note || "").toLowerCase().includes(q)
         ));
         if (!filtered.length) {
-          area.innerHTML = `<div class="empty">કોઈ કંપની મળી નથી. ઉપર <b>"+ નવી કંપની"</b> બટન દબાવીને ફોલ્ડર બનાવો.</div>`;
+          area.innerHTML = `<div class="empty">કોઈ કંપની મળી નથી. ઉપર <b>"+ કંપની"</b> બટન દબાવીને ફોલ્ડર બનાવો.</div>`;
           return;
         }
         area.innerHTML = `<div class="grid">${filtered.map(c => {
@@ -633,11 +694,16 @@
     document.getElementById("btnBrandSettings").onclick = () => {
       pendingBrandLogoUrl = null;
       document.getElementById("brandNameInput").value = getActiveBrandName();
+      document.getElementById("themeSelect").value = getActiveTheme();
       document.getElementById("brandLogoInput").value = "";
       const prev = document.getElementById("brandPreviewImg");
       prev.style.display = "";
       prev.src = getActiveBrandLogo();
       openModal("brandModal");
+    };
+
+    document.getElementById("themeSelect").onchange = (e) => {
+      applyTheme(e.target.value);
     };
 
     document.getElementById("brandLogoInput").onchange = (e) => {
@@ -661,26 +727,31 @@
     document.getElementById("saveBrandBtn").onclick = () => {
       const typedName = document.getElementById("brandNameInput").value.trim();
       const finalName = typedName || DEFAULT_BRAND_NAME;
+      const selectedTheme = document.getElementById("themeSelect").value || "default";
+
       localStorage.setItem(BRAND_NAME_KEY, finalName);
+      localStorage.setItem(THEME_KEY, selectedTheme);
+
       if (pendingBrandLogoUrl) {
         try {
           localStorage.setItem(BRAND_LOGO_KEY, pendingBrandLogoUrl);
         } catch {
-          showToast("લોગો સાચવવા માટે સ્ટોરેજ ઓછું છે; નામ સેવ થયું");
+          showToast("લોગો સાચવવા માટે સ્ટોરેજ ઓછું છે; નામ અને થીમ સેવ થયા");
         }
       }
       applyBrandSettings();
       closeModalWithHistory("brandModal");
-      showToast("બ્રાન્ડ નામ અને લોગો સેવ થયા");
+      showToast("બ્રાન્ડ, લોગો અને થીમ સેવ થયા");
     };
 
     document.getElementById("resetBrandBtn").onclick = () => {
       localStorage.removeItem(BRAND_NAME_KEY);
       localStorage.removeItem(BRAND_LOGO_KEY);
+      localStorage.removeItem(THEME_KEY);
       pendingBrandLogoUrl = null;
       applyBrandSettings();
       closeModalWithHistory("brandModal");
-      showToast("મૂળ (Default) નામ અને લોગો સેટ થયા");
+      showToast("મૂળ (Default) નામ, લોગો અને થીમ સેટ થયા");
     };
 
     document.getElementById("zoomInBtn").onclick = () => { zoomLevel = Math.min(3.5, +(zoomLevel + 0.25).toFixed(2)); applyTransform(); };
