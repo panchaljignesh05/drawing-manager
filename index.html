@@ -161,9 +161,9 @@
       inset: 0;
       background-image: var(--header-bg-logo, none);
       background-repeat: no-repeat;
-      background-position: right 14px center;
-      background-size: 96px 96px;
-      opacity: 0.15;
+      background-position: 54% 52%;
+      background-size: 112px 112px;
+      opacity: 0.2;
       pointer-events: none;
       z-index: 0;
     }
@@ -171,7 +171,7 @@
       content: "";
       position: absolute;
       inset: 0;
-      background: linear-gradient(90deg, rgba(2, 6, 23, 0.28) 0%, rgba(2, 6, 23, 0.12) 55%, rgba(2, 6, 23, 0.34) 100%);
+      background: radial-gradient(circle at 54% 52%, rgba(2, 6, 23, 0.06) 0%, rgba(2, 6, 23, 0.34) 100%);
       pointer-events: none;
       z-index: 0;
     }
@@ -181,72 +181,83 @@
       max-width: 980px;
       margin: 0 auto;
       display: flex;
-      flex-wrap: wrap;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .header-top-row {
+      display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 10px;
+      gap: 8px;
+      flex-wrap: wrap;
     }
     .brand { display: flex; align-items: center; gap: 10px; min-width: 0; }
     .logo-img {
-      width: 44px; height: 44px; border-radius: 11px;
+      width: 42px; height: 42px; border-radius: 10px;
       object-fit: contain; background: #ffffff; padding: 3px; flex-shrink: 0;
       box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
     }
     .brand h1 {
       margin: 0;
-      font-size: 1.12rem;
+      font-size: 1.08rem;
       font-weight: 800;
       letter-spacing: 0.4px;
       color: #ffffff;
       line-height: 1.2;
-      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
     }
     .account-sub {
-      font-size: 0.72rem;
+      font-size: 0.7rem;
       color: #f8fafc;
-      opacity: 0.88;
+      opacity: 0.86;
       margin-top: 2px;
-      letter-spacing: 0.15px;
+      letter-spacing: 0.1px;
     }
-    .header-right-cluster {
-      display: flex; align-items: center; gap: 7px; flex-wrap: wrap; margin-left: auto;
+    .header-bottom-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      flex-wrap: wrap;
     }
     .mini-stats-pill {
-      display: inline-flex; align-items: center; gap: 5px;
-      background: rgba(255, 255, 255, 0.14);
-      border: 1px solid rgba(255, 255, 255, 0.22);
-      color: #f8fafc;
-      font-size: 0.74rem;
+      display: inline-flex; align-items: center; gap: 4px;
+      background: rgba(255, 255, 255, 0.11);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      color: #f1f5f9;
+      font-size: 0.69rem;
       font-weight: 600;
-      padding: 4px 9px;
+      padding: 3px 8px;
       border-radius: 999px;
       white-space: nowrap;
+      opacity: 0.9;
     }
-    .header-actions { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+    .header-actions { display: flex; gap: 5px; flex-wrap: wrap; align-items: center; margin-left: auto; }
     button, .btn {
       border: none; border-radius: 8px; padding: 8px 12px; font-size: 0.86rem;
       cursor: pointer; font-weight: 600; display: inline-flex; align-items: center; gap: 5px;
       text-decoration: none; transition: opacity 0.15s ease, transform 0.1s ease, background 0.15s ease;
     }
     button:active, .btn:active { transform: scale(0.98); }
-    .btn-primary { background: var(--accent); color: #ffffff; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.18); }
+    .btn-primary { background: var(--accent); color: #ffffff; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2); }
     .btn-wa { background: var(--whatsapp); color: #ffffff; }
     .btn-light {
-      background: rgba(255, 255, 255, 0.16);
+      background: rgba(255, 255, 255, 0.14);
       color: #ffffff;
-      border: 1px solid rgba(255, 255, 255, 0.24);
+      border: 1px solid rgba(255, 255, 255, 0.22);
     }
     .btn-icon {
-      padding: 6px 8px;
-      font-size: 0.82rem;
-      border-radius: 8px;
-      background: rgba(255, 255, 255, 0.16);
+      padding: 4px 7px;
+      font-size: 0.76rem;
+      border-radius: 7px;
+      background: rgba(255, 255, 255, 0.12);
       color: #ffffff;
-      border: 1px solid rgba(255, 255, 255, 0.24);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      opacity: 0.92;
     }
     .btn-outline { background: var(--card-subtle); color: var(--text); border: 1px solid var(--border); }
     .btn-danger { background: var(--danger); color: #ffffff; }
-    .btn-sm { padding: 5px 9px; font-size: 0.78rem; }
+    .btn-sm { padding: 5px 9px; font-size: 0.76rem; }
 
     .container { max-width: 980px; margin: 16px auto; padding: 0 14px 68px; }
     .toolbar-row {
@@ -365,25 +376,30 @@
 
   <header>
     <div class="header-inner">
-      <div class="brand">
-        <img
-          id="headerLogo"
-          src="1e4f928e-8efe-4335-9efd-a31f71419358.png"
-          alt="Brand Logo"
-          class="logo-img"
-          onerror="this.style.display='none'"
-        />
-        <div>
-          <h1 id="headerBrandName">SAGAR GRINDING WORKS</h1>
-          <div class="account-sub" id="accountStatusText">Local Mode • Gmail Sign-In Optional</div>
+      <div class="header-top-row">
+        <div class="brand">
+          <img
+            id="headerLogo"
+            src="1e4f928e-8efe-4335-9efd-a31f71419358.png"
+            alt="Brand Logo"
+            class="logo-img"
+            onerror="this.style.display='none'"
+          />
+          <div>
+            <h1 id="headerBrandName">SAGAR GRINDING WORKS</h1>
+            <div class="account-sub" id="accountStatusText">Local Mode • Gmail Sign-In Optional</div>
+          </div>
         </div>
-      </div>
 
-      <div class="header-right-cluster">
-        <span class="mini-stats-pill" id="headerStats" title="Companies / Drawings / Storage / Backup">📁 0 • 📄 0 • 0.0 MB</span>
         <div class="header-actions">
           <button class="btn-light btn-sm" id="btnGoogleAuth" title="Gmail Account & Auto Cloud Backup">🔑 Gmail</button>
           <button class="btn-primary btn-sm" id="btnAddCompany" title="Add Company">+ Company</button>
+        </div>
+      </div>
+
+      <div class="header-bottom-row">
+        <span class="mini-stats-pill" id="headerStats" title="Companies / Drawings / Storage / Backup">📁 0 • 📄 0 • 0.0 MB</span>
+        <div class="header-actions">
           <button class="btn-icon" id="btnBrandSettings" title="Brand, Logo, Theme & Wallpaper">🎨</button>
           <button class="btn-icon" id="btnBackup" title="Backup">💾</button>
           <button class="btn-icon" id="btnRestore" title="Restore">♻️</button>
@@ -1602,7 +1618,7 @@
       if (!("serviceWorker" in navigator) || !window.isSecureContext) return;
       const appUrl = location.href.split("#")[0];
       const swCode = `
-        const CACHE_NAME = "sgw-offline-cache-v9";
+        const CACHE_NAME = "sgw-offline-cache-v11";
         const APP_URL = ${JSON.stringify(appUrl)};
         self.addEventListener("install", (event) => {
           event.waitUntil(
