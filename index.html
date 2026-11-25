@@ -161,9 +161,9 @@
       inset: 0;
       background-image: var(--header-bg-logo, none);
       background-repeat: no-repeat;
-      background-position: 54% 52%;
-      background-size: 112px 112px;
-      opacity: 0.2;
+      background-position: 50% 56%;
+      background-size: 118px 118px;
+      opacity: 0.22;
       pointer-events: none;
       z-index: 0;
     }
@@ -171,7 +171,7 @@
       content: "";
       position: absolute;
       inset: 0;
-      background: radial-gradient(circle at 54% 52%, rgba(2, 6, 23, 0.06) 0%, rgba(2, 6, 23, 0.34) 100%);
+      background: radial-gradient(circle at 50% 56%, rgba(2, 6, 23, 0.04) 0%, rgba(2, 6, 23, 0.34) 100%);
       pointer-events: none;
       z-index: 0;
     }
@@ -182,16 +182,15 @@
       margin: 0 auto;
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: 9px;
     }
     .header-top-row {
       display: flex;
-      align-items: center;
+      align-items: flex-start;
       justify-content: space-between;
       gap: 8px;
-      flex-wrap: wrap;
     }
-    .brand { display: flex; align-items: center; gap: 10px; min-width: 0; }
+    .brand { display: flex; align-items: center; gap: 10px; min-width: 0; flex: 1 1 auto; }
     .logo-img {
       width: 42px; height: 42px; border-radius: 10px;
       object-fit: contain; background: #ffffff; padding: 3px; flex-shrink: 0;
@@ -199,40 +198,53 @@
     }
     .brand h1 {
       margin: 0;
-      font-size: 1.08rem;
+      font-size: 1.04rem;
       font-weight: 800;
-      letter-spacing: 0.4px;
+      letter-spacing: 0.35px;
       color: #ffffff;
       line-height: 1.2;
       text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
     }
     .account-sub {
-      font-size: 0.7rem;
+      font-size: 0.69rem;
       color: #f8fafc;
       opacity: 0.86;
       margin-top: 2px;
       letter-spacing: 0.1px;
+      word-break: break-word;
+    }
+    .top-primary-actions {
+      display: flex;
+      gap: 5px;
+      align-items: center;
+      flex-shrink: 0;
     }
     .header-bottom-row {
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 8px;
-      flex-wrap: wrap;
+      min-height: 26px;
     }
     .mini-stats-pill {
       display: inline-flex; align-items: center; gap: 4px;
-      background: rgba(255, 255, 255, 0.11);
-      border: 1px solid rgba(255, 255, 255, 0.18);
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.16);
       color: #f1f5f9;
-      font-size: 0.69rem;
+      font-size: 0.66rem;
       font-weight: 600;
-      padding: 3px 8px;
+      padding: 3px 7px;
       border-radius: 999px;
       white-space: nowrap;
-      opacity: 0.9;
+      opacity: 0.88;
     }
-    .header-actions { display: flex; gap: 5px; flex-wrap: wrap; align-items: center; margin-left: auto; }
+    .side-utility-actions {
+      display: flex;
+      gap: 4px;
+      align-items: center;
+      margin-left: auto;
+      flex-shrink: 0;
+    }
     button, .btn {
       border: none; border-radius: 8px; padding: 8px 12px; font-size: 0.86rem;
       cursor: pointer; font-weight: 600; display: inline-flex; align-items: center; gap: 5px;
@@ -247,17 +259,18 @@
       border: 1px solid rgba(255, 255, 255, 0.22);
     }
     .btn-icon {
-      padding: 4px 7px;
-      font-size: 0.76rem;
-      border-radius: 7px;
-      background: rgba(255, 255, 255, 0.12);
+      padding: 3px 6px;
+      font-size: 0.72rem;
+      line-height: 1.1;
+      border-radius: 6px;
+      background: rgba(255, 255, 255, 0.11);
       color: #ffffff;
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      opacity: 0.92;
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      opacity: 0.9;
     }
     .btn-outline { background: var(--card-subtle); color: var(--text); border: 1px solid var(--border); }
     .btn-danger { background: var(--danger); color: #ffffff; }
-    .btn-sm { padding: 5px 9px; font-size: 0.76rem; }
+    .btn-sm { padding: 5px 8px; font-size: 0.74rem; }
 
     .container { max-width: 980px; margin: 16px auto; padding: 0 14px 68px; }
     .toolbar-row {
@@ -391,7 +404,7 @@
           </div>
         </div>
 
-        <div class="header-actions">
+        <div class="top-primary-actions">
           <button class="btn-light btn-sm" id="btnGoogleAuth" title="Gmail Account & Auto Cloud Backup">🔑 Gmail</button>
           <button class="btn-primary btn-sm" id="btnAddCompany" title="Add Company">+ Company</button>
         </div>
@@ -399,7 +412,7 @@
 
       <div class="header-bottom-row">
         <span class="mini-stats-pill" id="headerStats" title="Companies / Drawings / Storage / Backup">📁 0 • 📄 0 • 0.0 MB</span>
-        <div class="header-actions">
+        <div class="side-utility-actions">
           <button class="btn-icon" id="btnBrandSettings" title="Brand, Logo, Theme & Wallpaper">🎨</button>
           <button class="btn-icon" id="btnBackup" title="Backup">💾</button>
           <button class="btn-icon" id="btnRestore" title="Restore">♻️</button>
@@ -1618,7 +1631,7 @@
       if (!("serviceWorker" in navigator) || !window.isSecureContext) return;
       const appUrl = location.href.split("#")[0];
       const swCode = `
-        const CACHE_NAME = "sgw-offline-cache-v11";
+        const CACHE_NAME = "sgw-offline-cache-v12";
         const APP_URL = ${JSON.stringify(appUrl)};
         self.addEventListener("install", (event) => {
           event.waitUntil(
