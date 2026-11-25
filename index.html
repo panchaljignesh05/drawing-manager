@@ -19,6 +19,7 @@
       --text: #0f172a;
       --muted: #64748b;
       --border: #cbd5e1;
+      --wallpaper-dim: 0.45;
     }
     body[data-theme="mint"] {
       --bg: #ecfdf5;
@@ -45,8 +46,97 @@
       --muted: #94a3b8;
       --border: #334155;
     }
+    body[data-theme="obsidian-oled"] {
+      --bg: #000000;
+      --card: #0c0c0f;
+      --card-subtle: #141419;
+      --primary: #09090b;
+      --primary-dark: #000000;
+      --accent: #38bdf8;
+      --text: #f8fafc;
+      --muted: #a1a1aa;
+      --border: #27272a;
+    }
+    body[data-theme="emerald-night"] {
+      --bg: #04130e;
+      --card: #0a2119;
+      --card-subtle: #061812;
+      --primary: #064e3b;
+      --primary-dark: #021c14;
+      --accent: #10b981;
+      --text: #ecfdf5;
+      --muted: #86efac;
+      --border: #14532d;
+    }
+    body[data-theme="royal-amethyst"] {
+      --bg: #0d0718;
+      --card: #180f2b;
+      --card-subtle: #110a20;
+      --primary: #3b0764;
+      --primary-dark: #19042c;
+      --accent: #a855f7;
+      --text: #f5f3ff;
+      --muted: #c4b5fd;
+      --border: #4c1d95;
+    }
+    body[data-theme="amber-charcoal"] {
+      --bg: #12100e;
+      --card: #1e1a16;
+      --card-subtle: #161310;
+      --primary: #292118;
+      --primary-dark: #0f0c08;
+      --accent: #f59e0b;
+      --text: #fffbeb;
+      --muted: #fcd34d;
+      --border: #453520;
+    }
+
     * { box-sizing: border-box; font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
-    body { margin: 0; background: var(--bg); color: var(--text); transition: background 0.2s ease, color 0.2s ease; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      transition: background 0.2s ease, color 0.2s ease;
+      position: relative;
+      min-height: 100vh;
+    }
+
+    /* Custom Wallpaper Layer + Readability Overlay */
+    #wallpaperLayer {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      display: none;
+      background-position: center;
+      background-size: cover;
+      background-repeat: no-repeat;
+    }
+    #wallpaperLayer.active {
+      display: block;
+    }
+    #wallpaperLayer::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: rgba(2, 6, 23, var(--wallpaper-dim, 0.45));
+    }
+    body.has-wallpaper {
+      background: transparent;
+    }
+    body.has-wallpaper .card,
+    body.has-wallpaper .search-box,
+    body.has-wallpaper .sort-select,
+    body.has-wallpaper .empty {
+      background: color-mix(in srgb, var(--card) 88%, transparent);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+    }
+
+    header, .container, .toast {
+      position: relative;
+      z-index: 1;
+    }
     header {
       background: linear-gradient(135deg, var(--primary), var(--primary-dark));
       color: #ffffff; padding: 12px 14px; position: sticky; top: 0; z-index: 20;
@@ -62,7 +152,7 @@
       object-fit: contain; background: #ffffff; padding: 3px; flex-shrink: 0;
     }
     .brand h1 { margin: 0; font-size: 1.08rem; letter-spacing: 0.3px; color: #ffffff; line-height: 1.2; }
-    .account-sub { font-size: 0.74rem; color: #e2e8f0; opacity: 0.92; margin-top: 2px; }
+    .account-sub { font-size: 0.74rem; color: #f1f5f9; opacity: 0.95; margin-top: 2px; }
     .header-right-cluster {
       display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-left: auto;
     }
@@ -121,13 +211,13 @@
     .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 14px; }
     .card {
       background: var(--card); border: 1px solid var(--border); border-radius: 12px;
-      padding: 14px; box-shadow: 0 2px 6px rgba(15, 23, 42, 0.05); display: flex;
+      padding: 14px; box-shadow: 0 2px 6px rgba(15, 23, 42, 0.08); display: flex;
       flex-direction: column; justify-content: space-between; gap: 12px;
     }
     .folder-title { font-size: 1.05rem; font-weight: 700; color: var(--text); margin: 0; cursor: pointer; }
     .meta { font-size: 0.82rem; color: var(--muted); }
     .badge {
-      display: inline-block; background: #e6f4f1; color: #0f766e;
+      display: inline-block; background: rgba(20, 184, 166, 0.16); color: var(--accent);
       font-weight: 700; font-size: 0.74rem; padding: 2px 8px; border-radius: 999px;
       margin-left: 6px;
     }
@@ -144,13 +234,14 @@
     }
 
     .modal-backdrop {
-      position: fixed; inset: 0; background: rgba(15, 23, 42, 0.62);
+      position: fixed; inset: 0; background: rgba(15, 23, 42, 0.68);
       display: none; align-items: center; justify-content: center; z-index: 50; padding: 12px;
     }
     .modal-backdrop.open { display: flex; }
     .modal {
-      background: var(--card); color: var(--text); border-radius: 14px; width: 100%; max-width: 640px;
-      max-height: 92vh; overflow-y: auto; padding: 18px; box-shadow: 0 12px 30px rgba(15, 23, 42, 0.22);
+      background: var(--card); color: var(--text); border: 1px solid var(--border);
+      border-radius: 14px; width: 100%; max-width: 640px;
+      max-height: 92vh; overflow-y: auto; padding: 18px; box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
     }
     .modal h3 { margin: 0 0 10px; color: var(--text); }
     .field { margin-bottom: 12px; }
@@ -159,6 +250,7 @@
       width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border);
       background: var(--card-subtle); color: var(--text); font-size: 0.95rem;
     }
+    .field input[type="range"] { padding: 4px 0; accent-color: var(--accent); }
     .brand-preview-box {
       display: flex; align-items: center; gap: 12px; padding: 10px;
       background: var(--card-subtle); border: 1px solid var(--border); border-radius: 10px;
@@ -167,6 +259,15 @@
     .brand-preview-img {
       width: 52px; height: 52px; object-fit: contain; border-radius: 8px;
       background: #ffffff; border: 1px solid #e2e8f0; padding: 3px; flex-shrink: 0;
+    }
+    .wallpaper-preview-box {
+      display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap;
+      padding: 10px; border-radius: 10px; border: 1px solid var(--border); background: var(--card-subtle);
+      margin-bottom: 12px;
+    }
+    .wallpaper-thumb {
+      width: 68px; height: 44px; border-radius: 6px; object-fit: cover;
+      border: 1px solid var(--border); display: none;
     }
     .viewer-stage {
       width: 100%; height: 58vh; overflow: auto; background: var(--card-subtle);
@@ -180,12 +281,15 @@
     .viewer-toolbar { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px; }
     .toast {
       position: fixed; bottom: 18px; left: 50%; transform: translateX(-50%);
-      background: var(--primary-dark); color: #ffffff; padding: 10px 16px; border-radius: 8px;
-      font-size: 0.88rem; z-index: 100; display: none; box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      background: var(--primary-dark); color: #ffffff; border: 1px solid var(--border);
+      padding: 10px 16px; border-radius: 8px;
+      font-size: 0.88rem; z-index: 100; display: none; box-shadow: 0 4px 12px rgba(0,0,0,0.3);
     }
   </style>
 </head>
 <body>
+  <div id="wallpaperLayer" aria-hidden="true"></div>
+
   <header>
     <div class="header-inner">
       <div class="brand">
@@ -207,7 +311,7 @@
         <div class="header-actions">
           <button class="btn-light btn-sm" id="btnGoogleAuth" title="Gmail Account & Auto Cloud Backup">🔑 Gmail</button>
           <button class="btn-primary btn-sm" id="btnAddCompany" title="Add Company">+ Company</button>
-          <button class="btn-icon" id="btnBrandSettings" title="Brand, Logo & Theme">🎨</button>
+          <button class="btn-icon" id="btnBrandSettings" title="Brand, Logo, Theme & Wallpaper">🎨</button>
           <button class="btn-icon" id="btnBackup" title="Backup">💾</button>
           <button class="btn-icon" id="btnRestore" title="Restore">♻️</button>
           <input type="file" id="restoreFile" accept=".json,application/json" style="display:none" />
@@ -257,10 +361,10 @@
     </div>
   </div>
 
-  <!-- Brand Name, Logo & Theme Modal -->
+  <!-- Brand Name, Logo, Theme & Wallpaper Modal -->
   <div class="modal-backdrop" id="brandModal">
     <div class="modal">
-      <h3>Business Name, Logo &amp; Theme</h3>
+      <h3>Business Name, Logo, Theme &amp; Wallpaper</h3>
       <div class="field">
         <label>Company / Business Name *</label>
         <input type="text" id="brandNameInput" placeholder="e.g. SAGAR GRINDING WORKS" />
@@ -276,11 +380,30 @@
           <option value="mint">Soft Mint &amp; Emerald</option>
           <option value="sand">Warm Sand &amp; Amber</option>
           <option value="slate-dark">Dark Slate Mode</option>
+          <option value="obsidian-oled">Obsidian OLED (Pure Black)</option>
+          <option value="emerald-night">Emerald Night (Dark Green)</option>
+          <option value="royal-amethyst">Royal Amethyst (Dark Purple)</option>
+          <option value="amber-charcoal">Amber Charcoal (Dark Gold)</option>
         </select>
+      </div>
+      <div class="field">
+        <label>Custom Background Wallpaper Photo (Saved Locally)</label>
+        <input type="file" id="wallpaperFileInput" accept="image/*" />
+      </div>
+      <div class="wallpaper-preview-box">
+        <div style="display:flex; align-items:center; gap:10px;">
+          <img id="wallpaperPreviewThumb" class="wallpaper-thumb" alt="Wallpaper Preview" />
+          <span class="meta" id="wallpaperStatusLabel">No custom wallpaper set</span>
+        </div>
+        <button type="button" class="btn-outline btn-sm" id="removeWallpaperBtn" style="display:none;">Remove Wallpaper</button>
+      </div>
+      <div class="field">
+        <label>Wallpaper Overlay Darkness (<span id="dimValueLabel">45%</span>) — for clear text readability</label>
+        <input type="range" id="wallpaperDimSlider" min="15" max="80" step="5" value="45" />
       </div>
       <div class="brand-preview-box">
         <img id="brandPreviewImg" class="brand-preview-img" src="1e4f928e-8efe-4335-9efd-a31f71419358.png" alt="Preview" onerror="this.style.display='none'" />
-        <div class="meta">Name, logo, and theme are saved on this device/browser; your drawings stay safe.</div>
+        <div class="meta">Name, logo, and theme sync with your account; wallpaper stays stored locally on this device for fast loading.</div>
       </div>
       <div style="display:flex; gap:8px; flex-wrap:wrap; justify-content:space-between;">
         <button class="btn-danger btn-sm" id="resetBrandBtn">Reset to Default</button>
@@ -383,26 +506,27 @@
     } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
     // =========================================================================
-    // Paste your Firebase Web App config keys here (one-time setup)
+    // Firebase Web App config keys
     // =========================================================================
     const FIREBASE_CONFIG = {
-  apiKey: "AIzaSyCYrqAz3z1EdmomJ_f-WtorwLvrdVZV-ok",
-  authDomain: "drawing-manager-5fac3.firebaseapp.com",
-  projectId: "drawing-manager-5fac3",
-  storageBucket: "drawing-manager-5fac3.firebasestorage.app",
-  messagingSenderId: "521058748048",
-  appId: "1:521058748048:web:b19c2dc5f4d9b235c07a15"
-};
-
+      apiKey: "AIzaSyCYrqAz3z1EdmomJ_f-WtorwLvrdVZV-ok",
+      authDomain: "drawing-manager-5fac3.firebaseapp.com",
+      projectId: "drawing-manager-5fac3",
+      storageBucket: "drawing-manager-5fac3.firebasestorage.app",
+      messagingSenderId: "521058748048",
+      appId: "1:521058748048:web:b19c2dc5f4d9b235c07a15"
+    };
 
     const DB_NAME = "SGW_DrawingManager_DB";
-    const DB_VERSION = 1;
+    const DB_VERSION = 2;
     const BACKUP_META_KEY = "SGW_Last_Backup_Date";
     const DEFAULT_BRAND_NAME = "SAGAR GRINDING WORKS";
     const DEFAULT_BRAND_LOGO = "1e4f928e-8efe-4335-9efd-a31f71419358.png";
     const BRAND_NAME_KEY = "SGW_Brand_Name_v1";
     const BRAND_LOGO_KEY = "SGW_Brand_Logo_v1";
     const THEME_KEY = "SGW_Theme_v1";
+    const WALLPAPER_DIM_KEY = "SGW_Wallpaper_Dim_v1";
+    const WALLPAPER_ID = "active_wallpaper";
 
     let db;
     let companies = [];
@@ -412,6 +536,9 @@
     let editingDrawingId = null;
     let currentViewingDrawing = null;
     let pendingBrandLogoUrl = null;
+    let activeWallpaperUrl = null;
+    let pendingWallpaperUrl = null;
+    let removeWallpaperRequested = false;
     let zoomLevel = 1;
     let rotationDeg = 0;
     let ignoringPop = false;
@@ -445,6 +572,31 @@
       return localStorage.getItem(THEME_KEY) || "default";
     }
 
+    function getSavedWallpaperDim() {
+      const val = Number(localStorage.getItem(WALLPAPER_DIM_KEY));
+      if (!Number.isNaN(val) && val >= 15 && val <= 80) return val;
+      return 45;
+    }
+
+    function applyWallpaperDim(percent) {
+      const clamped = Math.min(80, Math.max(15, Number(percent) || 45));
+      document.documentElement.style.setProperty("--wallpaper-dim", (clamped / 100).toFixed(2));
+      document.getElementById("dimValueLabel").textContent = `${clamped}%`;
+    }
+
+    function applyWallpaperVisual(dataUrl) {
+      const layer = document.getElementById("wallpaperLayer");
+      if (dataUrl) {
+        layer.style.backgroundImage = `url("${dataUrl}")`;
+        layer.classList.add("active");
+        document.body.classList.add("has-wallpaper");
+      } else {
+        layer.style.backgroundImage = "";
+        layer.classList.remove("active");
+        document.body.classList.remove("has-wallpaper");
+      }
+    }
+
     function applyTheme(theme) {
       if (!theme || theme === "default") {
         document.body.removeAttribute("data-theme");
@@ -459,6 +611,9 @@
       const theme = getActiveTheme();
 
       applyTheme(theme);
+      applyWallpaperDim(getSavedWallpaperDim());
+      applyWallpaperVisual(activeWallpaperUrl);
+
       document.title = `${name} — Drawing & PDF Manager`;
       document.getElementById("headerBrandName").textContent = name;
       const logoEl = document.getElementById("headerLogo");
@@ -569,6 +724,9 @@
             const ds = d.createObjectStore("drawings", { keyPath: "id" });
             ds.createIndex("companyId", "companyId", { unique: false });
           }
+          if (!d.objectStoreNames.contains("wallpapers")) {
+            d.createObjectStore("wallpapers", { keyPath: "id" });
+          }
         };
         req.onsuccess = () => { db = req.result; resolve(db); };
         req.onerror = () => reject(req.error);
@@ -580,6 +738,15 @@
         const tx = db.transaction(storeName, "readonly");
         const req = tx.objectStore(storeName).getAll();
         req.onsuccess = () => resolve(req.result || []);
+        req.onerror = () => reject(req.error);
+      });
+    }
+
+    function txGetById(storeName, id) {
+      return new Promise((resolve, reject) => {
+        const tx = db.transaction(storeName, "readonly");
+        const req = tx.objectStore(storeName).get(id);
+        req.onsuccess = () => resolve(req.result || null);
         req.onerror = () => reject(req.error);
       });
     }
@@ -600,6 +767,41 @@
         req.onsuccess = () => resolve();
         req.onerror = () => reject(req.error);
       });
+    }
+
+    async function loadSavedWallpaperFromDB() {
+      try {
+        const rec = await txGetById("wallpapers", WALLPAPER_ID);
+        activeWallpaperUrl = rec && rec.dataUrl ? rec.dataUrl : null;
+      } catch (_) {
+        activeWallpaperUrl = null;
+      }
+      applyWallpaperVisual(activeWallpaperUrl);
+    }
+
+    async function saveWallpaperToDB(dataUrl) {
+      await txPut("wallpapers", { id: WALLPAPER_ID, dataUrl, updatedAt: new Date().toISOString() });
+    }
+
+    async function deleteWallpaperFromDB() {
+      await txDelete("wallpapers", WALLPAPER_ID);
+    }
+
+    function updateWallpaperModalPreview(previewUrl) {
+      const thumb = document.getElementById("wallpaperPreviewThumb");
+      const label = document.getElementById("wallpaperStatusLabel");
+      const removeBtn = document.getElementById("removeWallpaperBtn");
+      if (previewUrl) {
+        thumb.src = previewUrl;
+        thumb.style.display = "block";
+        label.textContent = "Custom wallpaper selected";
+        removeBtn.style.display = "inline-flex";
+      } else {
+        thumb.src = "";
+        thumb.style.display = "none";
+        label.textContent = "No custom wallpaper set";
+        removeBtn.style.display = "none";
+      }
     }
 
     async function saveBrandToCloud() {
@@ -756,7 +958,7 @@
       } else if (mode === "oldest") {
         copy.sort((a, b) => String(a.createdAt || a.id).localeCompare(String(b.createdAt || b.id)));
       } else {
-        copy.sort((a, b) => String(b.createdAt || b.id).localeCompare(String(a.createdAt || a.id)));
+        copy.sort((a, b) => String(b.createdAt || b.id).localeCompare(String(a.createdAt || b.id)));
       }
       return copy;
     }
@@ -959,17 +1161,57 @@
 
     document.getElementById("btnBrandSettings").onclick = () => {
       pendingBrandLogoUrl = null;
+      pendingWallpaperUrl = null;
+      removeWallpaperRequested = false;
       document.getElementById("brandNameInput").value = getActiveBrandName();
       document.getElementById("themeSelect").value = getActiveTheme();
       document.getElementById("brandLogoInput").value = "";
+      document.getElementById("wallpaperFileInput").value = "";
+
+      const currentDim = getSavedWallpaperDim();
+      document.getElementById("wallpaperDimSlider").value = currentDim;
+      applyWallpaperDim(currentDim);
+
       const prev = document.getElementById("brandPreviewImg");
       prev.style.display = "";
       prev.src = getActiveBrandLogo();
+
+      updateWallpaperModalPreview(activeWallpaperUrl);
       openModal("brandModal");
     };
 
     document.getElementById("themeSelect").onchange = (e) => {
       applyTheme(e.target.value);
+    };
+
+    document.getElementById("wallpaperDimSlider").oninput = (e) => {
+      applyWallpaperDim(e.target.value);
+    };
+
+    document.getElementById("wallpaperFileInput").onchange = (e) => {
+      const file = e.target.files && e.target.files[0];
+      if (!file) return;
+      if (file.size > 4000000) {
+        showToast("Please select a wallpaper image smaller than 4 MB");
+        e.target.value = "";
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = () => {
+        pendingWallpaperUrl = reader.result;
+        removeWallpaperRequested = false;
+        updateWallpaperModalPreview(pendingWallpaperUrl);
+        applyWallpaperVisual(pendingWallpaperUrl);
+      };
+      reader.readAsDataURL(file);
+    };
+
+    document.getElementById("removeWallpaperBtn").onclick = () => {
+      pendingWallpaperUrl = null;
+      removeWallpaperRequested = true;
+      document.getElementById("wallpaperFileInput").value = "";
+      updateWallpaperModalPreview(null);
+      applyWallpaperVisual(null);
     };
 
     document.getElementById("brandLogoInput").onchange = (e) => {
@@ -994,32 +1236,54 @@
       const typedName = document.getElementById("brandNameInput").value.trim();
       const finalName = typedName || DEFAULT_BRAND_NAME;
       const selectedTheme = document.getElementById("themeSelect").value || "default";
+      const selectedDim = document.getElementById("wallpaperDimSlider").value;
 
       localStorage.setItem(BRAND_NAME_KEY, finalName);
       localStorage.setItem(THEME_KEY, selectedTheme);
+      localStorage.setItem(WALLPAPER_DIM_KEY, String(selectedDim));
 
       if (pendingBrandLogoUrl) {
         try {
           localStorage.setItem(BRAND_LOGO_KEY, pendingBrandLogoUrl);
         } catch {
-          showToast("Not enough storage for logo; name and theme saved");
+          showToast("Not enough storage for logo; other settings saved");
         }
       }
+
+      try {
+        if (pendingWallpaperUrl) {
+          await saveWallpaperToDB(pendingWallpaperUrl);
+          activeWallpaperUrl = pendingWallpaperUrl;
+        } else if (removeWallpaperRequested) {
+          await deleteWallpaperFromDB();
+          activeWallpaperUrl = null;
+        }
+      } catch (_) {
+        showToast("Could not save wallpaper locally");
+      }
+
       applyBrandSettings();
       await saveBrandToCloud();
       closeModalWithHistory("brandModal");
-      showToast("Brand, logo, and theme saved");
+      showToast("Theme & settings saved");
     };
 
     document.getElementById("resetBrandBtn").onclick = async () => {
       localStorage.removeItem(BRAND_NAME_KEY);
       localStorage.removeItem(BRAND_LOGO_KEY);
       localStorage.removeItem(THEME_KEY);
+      localStorage.removeItem(WALLPAPER_DIM_KEY);
       pendingBrandLogoUrl = null;
+      pendingWallpaperUrl = null;
+      removeWallpaperRequested = false;
+      activeWallpaperUrl = null;
+      try {
+        await deleteWallpaperFromDB();
+      } catch (_) {}
       applyBrandSettings();
       await saveBrandToCloud();
       closeModalWithHistory("brandModal");
-      showToast("Reset to default name, logo, and theme");
+      showToast("Reset to default name, logo, theme & wallpaper");
     };
 
     document.getElementById("zoomInBtn").onclick = () => { zoomLevel = Math.min(3.5, +(zoomLevel + 0.25).toFixed(2)); applyTransform(); };
@@ -1226,7 +1490,7 @@
       if (!("serviceWorker" in navigator) || !window.isSecureContext) return;
       const appUrl = location.href.split("#")[0];
       const swCode = `
-        const CACHE_NAME = "sgw-offline-cache-v4";
+        const CACHE_NAME = "sgw-offline-cache-v5";
         const APP_URL = ${JSON.stringify(appUrl)};
         self.addEventListener("install", (event) => {
           event.waitUntil(
@@ -1268,6 +1532,7 @@
     applyBrandSettings();
     registerOfflineCache();
     openDB().then(async () => {
+      await loadSavedWallpaperFromDB();
       await refreshLocalUI();
       initFirebaseIfConfigured();
     });
