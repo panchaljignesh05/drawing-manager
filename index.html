@@ -147,7 +147,7 @@
     header {
       background: linear-gradient(135deg, var(--primary), var(--primary-dark));
       color: #ffffff;
-      padding: 12px 14px;
+      padding: 10px 13px;
       position: sticky;
       top: 0;
       z-index: 20;
@@ -162,7 +162,7 @@
       background-image: var(--header-bg-logo, none);
       background-repeat: no-repeat;
       background-position: 52% 54%;
-      background-size: 116px 116px;
+      background-size: 112px 112px;
       opacity: 0.2;
       pointer-events: none;
       z-index: 0;
@@ -182,74 +182,81 @@
       margin: 0 auto;
       display: flex;
       flex-direction: column;
-      gap: 9px;
+      gap: 7px;
     }
     .header-top-row {
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 8px;
-      flex-wrap: wrap;
     }
     .brand {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 9px;
       min-width: 0;
-      flex: 1 1 220px;
+      flex: 1;
     }
     .brand > div:last-child {
       min-width: 0;
       flex: 1;
     }
     .logo-img {
-      width: 42px; height: 42px; border-radius: 10px;
-      object-fit: contain; background: #ffffff; padding: 3px; flex-shrink: 0;
+      width: 38px; height: 38px; border-radius: 9px;
+      object-fit: contain; background: #ffffff; padding: 2px; flex-shrink: 0;
       box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
     }
     .brand h1 {
       margin: 0;
-      font-size: 1.02rem;
+      font-size: 0.98rem;
       font-weight: 800;
       letter-spacing: 0.3px;
       color: #ffffff;
-      line-height: 1.2;
+      line-height: 1.18;
       text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
-      overflow-wrap: anywhere;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
     .account-sub {
-      font-size: 0.69rem;
+      font-size: 0.65rem;
       color: #f8fafc;
-      opacity: 0.88;
+      opacity: 0.82;
       margin-top: 2px;
       letter-spacing: 0.1px;
-      overflow-wrap: anywhere;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
-    .top-primary-actions {
+    .header-split-row {
       display: flex;
-      gap: 5px;
       align-items: center;
-      flex-shrink: 0;
-      margin-left: auto;
+      justify-content: space-between;
+      gap: 8px;
+      min-height: 25px;
     }
     .header-bottom-row {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 8px;
-      flex-wrap: wrap;
-      min-height: 26px;
+      gap: 6px;
+      min-height: 24px;
     }
     .mini-stats-pill {
-      display: inline-flex; align-items: center; gap: 4px;
-      background: rgba(255, 255, 255, 0.1);
-      border: 1px solid rgba(255, 255, 255, 0.16);
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      background: rgba(255, 255, 255, 0.09);
+      border: 1px solid rgba(255, 255, 255, 0.15);
       color: #f1f5f9;
-      font-size: 0.66rem;
+      font-size: 0.63rem;
       font-weight: 600;
-      padding: 3px 7px;
+      padding: 2px 7px;
       border-radius: 999px;
       white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: calc(100% - 88px);
       opacity: 0.9;
     }
     .side-utility-actions {
@@ -260,31 +267,31 @@
       flex-shrink: 0;
     }
     button, .btn {
-      border: none; border-radius: 8px; padding: 8px 12px; font-size: 0.86rem;
-      cursor: pointer; font-weight: 600; display: inline-flex; align-items: center; gap: 5px;
+      border: none; border-radius: 7px; padding: 7px 11px; font-size: 0.84rem;
+      cursor: pointer; font-weight: 600; display: inline-flex; align-items: center; gap: 4px;
       text-decoration: none; transition: opacity 0.15s ease, transform 0.1s ease, background 0.15s ease;
     }
     button:active, .btn:active { transform: scale(0.98); }
     .btn-primary { background: var(--accent); color: #ffffff; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2); }
     .btn-wa { background: var(--whatsapp); color: #ffffff; }
     .btn-light {
-      background: rgba(255, 255, 255, 0.14);
+      background: rgba(255, 255, 255, 0.13);
       color: #ffffff;
-      border: 1px solid rgba(255, 255, 255, 0.22);
+      border: 1px solid rgba(255, 255, 255, 0.2);
     }
     .btn-icon {
-      padding: 3px 6px;
-      font-size: 0.72rem;
-      line-height: 1.1;
+      padding: 2px 6px;
+      font-size: 0.7rem;
+      line-height: 1.15;
       border-radius: 6px;
-      background: rgba(255, 255, 255, 0.11);
+      background: rgba(255, 255, 255, 0.1);
       color: #ffffff;
-      border: 1px solid rgba(255, 255, 255, 0.18);
-      opacity: 0.92;
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      opacity: 0.9;
     }
     .btn-outline { background: var(--card-subtle); color: var(--text); border: 1px solid var(--border); }
     .btn-danger { background: var(--danger); color: #ffffff; }
-    .btn-sm { padding: 5px 8px; font-size: 0.74rem; }
+    .btn-sm { padding: 4px 8px; font-size: 0.72rem; white-space: nowrap; }
 
     .container { max-width: 980px; margin: 16px auto; padding: 0 14px 68px; }
     .toolbar-row {
@@ -414,14 +421,14 @@
           />
           <div>
             <h1 id="headerBrandName">SAGAR GRINDING WORKS</h1>
-            <div class="account-sub" id="accountStatusText">Local Mode • Gmail Sign-In Optional</div>
+            <div class="account-sub" id="accountStatusText">Local Mode</div>
           </div>
         </div>
+      </div>
 
-        <div class="top-primary-actions">
-          <button class="btn-light btn-sm" id="btnGoogleAuth" title="Gmail Account & Auto Cloud Backup">🔑 Gmail</button>
-          <button class="btn-primary btn-sm" id="btnAddCompany" title="Add Company">+ Company</button>
-        </div>
+      <div class="header-split-row">
+        <button class="btn-light btn-sm" id="btnGoogleAuth" title="Gmail Account & Auto Cloud Backup">🔑 Gmail</button>
+        <button class="btn-primary btn-sm" id="btnAddCompany" title="Add Company">+ Company</button>
       </div>
 
       <div class="header-bottom-row">
@@ -793,7 +800,7 @@
         signOutBtn.style.display = "inline-flex";
         hint.innerHTML = `<b>Status:</b> Automatic Cloud Sync is active.`;
       } else if (isFirebaseReady()) {
-        sub.textContent = "Local Mode • Sign in with Gmail for Cloud Sync";
+        sub.textContent = "Local Mode • Gmail Sign-In Optional";
         btn.textContent = "🔑 Gmail";
         modalInfo.textContent = "Sign in with your Gmail ID so your data automatically restores when you sign in on a new or secondary phone.";
         signInBtn.style.display = "inline-flex";
@@ -1645,7 +1652,7 @@
       if (!("serviceWorker" in navigator) || !window.isSecureContext) return;
       const appUrl = location.href.split("#")[0];
       const swCode = `
-        const CACHE_NAME = "sgw-offline-cache-v13";
+        const CACHE_NAME = "sgw-offline-cache-v15";
         const APP_URL = ${JSON.stringify(appUrl)};
         self.addEventListener("install", (event) => {
           event.waitUntil(
