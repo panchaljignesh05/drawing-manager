@@ -460,7 +460,7 @@
         </select>
       </div>
       <div class="field">
-        <label>Custom Background Wallpaper Photo (Saved Locally)</label>
+        <label>Custom Background Wallpaper Photo (Up to 15 MB • Auto-Optimized Locally)</label>
         <input type="file" id="wallpaperFileInput" accept="image/*" />
       </div>
       <div class="wallpaper-preview-box">
@@ -600,6 +600,8 @@
     const THEME_KEY = "SGW_Theme_v1";
     const WALLPAPER_DIM_KEY = "SGW_Wallpaper_Dim_v1";
     const WALLPAPER_ID = "active_wallpaper";
+    const MAX_WALLPAPER_BYTES = 15 * 1024 * 1024;
+    const MAX_WALLPAPER_WIDTH = 1080;
 
     let db;
     let companies = [];
@@ -675,6 +677,31 @@
         if (overlay) overlay.classList.remove("active");
         document.body.classList.remove("has-wallpaper");
       }
+    }
+
+    function optimizeWallpaperImage(dataUrl, maxWidth = MAX_WALLPAPER_WIDTH, quality = 0.82) {
+      return new Promise((resolve) => {
+        const img = new Image();
+        img.onload = () => {
+          const scale = img.width > maxWidth ? maxWidth / img.width : 1;
+          const targetW = Math.max(1, Math.round(img.width * scale));
+          const targetH = Math.max(1, Math.round(img.height * scale));
+          const canvas = document.createElement("canvas");
+          canvas.width = targetW;
+          canvas.height = targetH;
+          const ctx = canvas.getContext("2d");
+          if (!ctx) return resolve(dataUrl);
+          ctx.drawImage(img, 0, 0, targetW, targetH);
+          try {
+            const compressed = canvas.toDataURL("image/jpeg", quality);
+            resolve(compressed.length < dataUrl.length ? compressed : dataUrl);
+          } catch (_) {
+            resolve(dataUrl);
+          }
+        };
+        img.onerror = () => resolve(dataUrl);
+        img.src = dataUrl;
+      });
     }
 
     function applyTheme(theme) {
@@ -875,7 +902,7 @@
       if (previewUrl) {
         thumb.src = previewUrl;
         thumb.style.display = "block";
-        label.textContent = "Custom wallpaper selected";
+        label.textContent = "Custom wallpaper ready";
         removeBtn.style.display = "inline-flex";
       } else {
         thumb.src = "";
@@ -1272,17 +1299,21 @@
     document.getElementById("wallpaperFileInput").onchange = (e) => {
       const file = e.target.files && e.target.files[0];
       if (!file) return;
-      if (file.size > 4000000) {
-        showToast("Please select a wallpaper image smaller than 4 MB");
+      if (file.size > MAX_WALLPAPER_BYTES) {
+        showToast("Please select a wallpaper image smaller than 15 MB");
         e.target.value = "";
         return;
       }
       const reader = new FileReader();
-      reader.onload = () => {
-        pendingWallpaperUrl = reader.result;
+      reader.onload = async () => {
+        const optimized = await optimizeWallpaperImage(reader.result);
+        pendingWallpaperUrl = optimized;
         removeWallpaperRequested = false;
         updateWallpaperModalPreview(pendingWallpaperUrl);
         applyWallpaperVisual(pendingWallpaperUrl);
+        if (file.size > 2000000) {
+          showToast("Large wallpaper auto-optimized for fast loading");
+        }
       };
       reader.readAsDataURL(file);
     };
@@ -1571,7 +1602,7 @@
       if (!("serviceWorker" in navigator) || !window.isSecureContext) return;
       const appUrl = location.href.split("#")[0];
       const swCode = `
-        const CACHE_NAME = "sgw-offline-cache-v8";
+        const CACHE_NAME = "sgw-offline-cache-v9";
         const APP_URL = ${JSON.stringify(appUrl)};
         self.addEventListener("install", (event) => {
           event.waitUntil(
