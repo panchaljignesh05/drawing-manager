@@ -147,13 +147,16 @@
     header {
       background: linear-gradient(135deg, var(--primary), var(--primary-dark));
       color: #ffffff;
-      padding: 10px 13px;
+      padding: 16px 14px 20px;
+      min-height: 142px;
       position: sticky;
       top: 0;
       z-index: 20;
-      box-shadow: 0 4px 14px rgba(2, 6, 23, 0.22);
-      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 4px 16px rgba(2, 6, 23, 0.26);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.12);
       overflow: hidden;
+      display: flex;
+      align-items: center;
     }
     header::before {
       content: "";
@@ -161,9 +164,9 @@
       inset: 0;
       background-image: var(--header-bg-logo, none);
       background-repeat: no-repeat;
-      background-position: 52% 54%;
-      background-size: 112px 112px;
-      opacity: 0.2;
+      background-position: 50% 58%;
+      background-size: 142px 142px;
+      opacity: 0.22;
       pointer-events: none;
       z-index: 0;
     }
@@ -171,29 +174,30 @@
       content: "";
       position: absolute;
       inset: 0;
-      background: radial-gradient(circle at 52% 54%, rgba(2, 6, 23, 0.05) 0%, rgba(2, 6, 23, 0.34) 100%);
+      background: radial-gradient(circle at 50% 58%, rgba(2, 6, 23, 0.04) 0%, rgba(2, 6, 23, 0.34) 100%);
       pointer-events: none;
       z-index: 0;
     }
     .header-inner {
       position: relative;
       z-index: 1;
+      width: 100%;
       max-width: 980px;
       margin: 0 auto;
       display: flex;
       flex-direction: column;
-      gap: 7px;
+      gap: 12px;
     }
     .header-top-row {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 8px;
+      gap: 10px;
     }
     .brand {
       display: flex;
       align-items: center;
-      gap: 9px;
+      gap: 11px;
       min-width: 0;
       flex: 1;
     }
@@ -202,26 +206,26 @@
       flex: 1;
     }
     .logo-img {
-      width: 38px; height: 38px; border-radius: 9px;
-      object-fit: contain; background: #ffffff; padding: 2px; flex-shrink: 0;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+      width: 46px; height: 46px; border-radius: 11px;
+      object-fit: contain; background: #ffffff; padding: 3px; flex-shrink: 0;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.28);
     }
     .brand h1 {
       margin: 0;
-      font-size: 0.98rem;
+      font-size: 1.08rem;
       font-weight: 800;
-      letter-spacing: 0.3px;
+      letter-spacing: 0.4px;
       color: #ffffff;
-      line-height: 1.18;
-      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+      line-height: 1.22;
+      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.45);
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
     }
     .account-sub {
-      font-size: 0.65rem;
+      font-size: 0.68rem;
       color: #f8fafc;
-      opacity: 0.82;
+      opacity: 0.85;
       margin-top: 2px;
       letter-spacing: 0.1px;
       white-space: nowrap;
@@ -233,31 +237,31 @@
       align-items: center;
       justify-content: space-between;
       gap: 8px;
-      min-height: 25px;
+      min-height: 28px;
     }
     .header-bottom-row {
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 6px;
-      min-height: 24px;
+      min-height: 28px;
     }
     .mini-stats-pill {
       display: inline-flex;
       align-items: center;
-      gap: 3px;
-      background: rgba(255, 255, 255, 0.09);
-      border: 1px solid rgba(255, 255, 255, 0.15);
+      gap: 4px;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.16);
       color: #f1f5f9;
-      font-size: 0.63rem;
+      font-size: 0.65rem;
       font-weight: 600;
-      padding: 2px 7px;
+      padding: 3px 8px;
       border-radius: 999px;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-      max-width: calc(100% - 88px);
-      opacity: 0.9;
+      max-width: calc(100% - 92px);
+      opacity: 0.92;
     }
     .side-utility-actions {
       display: flex;
@@ -267,31 +271,31 @@
       flex-shrink: 0;
     }
     button, .btn {
-      border: none; border-radius: 7px; padding: 7px 11px; font-size: 0.84rem;
-      cursor: pointer; font-weight: 600; display: inline-flex; align-items: center; gap: 4px;
+      border: none; border-radius: 8px; padding: 8px 12px; font-size: 0.86rem;
+      cursor: pointer; font-weight: 600; display: inline-flex; align-items: center; gap: 5px;
       text-decoration: none; transition: opacity 0.15s ease, transform 0.1s ease, background 0.15s ease;
     }
     button:active, .btn:active { transform: scale(0.98); }
-    .btn-primary { background: var(--accent); color: #ffffff; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2); }
+    .btn-primary { background: var(--accent); color: #ffffff; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.22); }
     .btn-wa { background: var(--whatsapp); color: #ffffff; }
     .btn-light {
-      background: rgba(255, 255, 255, 0.13);
+      background: rgba(255, 255, 255, 0.14);
       color: #ffffff;
-      border: 1px solid rgba(255, 255, 255, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.22);
     }
     .btn-icon {
-      padding: 2px 6px;
-      font-size: 0.7rem;
+      padding: 3px 6px;
+      font-size: 0.72rem;
       line-height: 1.15;
       border-radius: 6px;
-      background: rgba(255, 255, 255, 0.1);
+      background: rgba(255, 255, 255, 0.11);
       color: #ffffff;
-      border: 1px solid rgba(255, 255, 255, 0.16);
-      opacity: 0.9;
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      opacity: 0.92;
     }
     .btn-outline { background: var(--card-subtle); color: var(--text); border: 1px solid var(--border); }
     .btn-danger { background: var(--danger); color: #ffffff; }
-    .btn-sm { padding: 4px 8px; font-size: 0.72rem; white-space: nowrap; }
+    .btn-sm { padding: 5px 9px; font-size: 0.74rem; white-space: nowrap; }
 
     .container { max-width: 980px; margin: 16px auto; padding: 0 14px 68px; }
     .toolbar-row {
@@ -800,7 +804,7 @@
         signOutBtn.style.display = "inline-flex";
         hint.innerHTML = `<b>Status:</b> Automatic Cloud Sync is active.`;
       } else if (isFirebaseReady()) {
-        sub.textContent = "Local Mode • Gmail Sign-In Optional";
+        sub.textContent = "Local Mode • Sign in with Gmail for Cloud Sync";
         btn.textContent = "🔑 Gmail";
         modalInfo.textContent = "Sign in with your Gmail ID so your data automatically restores when you sign in on a new or secondary phone.";
         signInBtn.style.display = "inline-flex";
@@ -1652,7 +1656,7 @@
       if (!("serviceWorker" in navigator) || !window.isSecureContext) return;
       const appUrl = location.href.split("#")[0];
       const swCode = `
-        const CACHE_NAME = "sgw-offline-cache-v15";
+        const CACHE_NAME = "sgw-offline-cache-v17";
         const APP_URL = ${JSON.stringify(appUrl)};
         self.addEventListener("install", (event) => {
           event.waitUntil(
