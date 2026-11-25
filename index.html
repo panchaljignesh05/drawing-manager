@@ -20,6 +20,7 @@
       --muted: #64748b;
       --border: #cbd5e1;
       --wallpaper-dim: 0.45;
+      --header-bg-logo: url("1e4f928e-8efe-4335-9efd-a31f71419358.png");
     }
     body[data-theme="mint"] {
       --bg: #ecfdf5;
@@ -147,8 +148,23 @@
       background: linear-gradient(135deg, var(--primary), var(--primary-dark));
       color: #ffffff; padding: 12px 14px; position: sticky; top: 0; z-index: 20;
       box-shadow: 0 3px 10px rgba(15, 23, 42, 0.14);
+      overflow: hidden;
+    }
+    header::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-image: var(--header-bg-logo, none);
+      background-repeat: no-repeat;
+      background-position: right 14px center;
+      background-size: 92px 92px;
+      opacity: 0.16;
+      pointer-events: none;
+      z-index: 0;
     }
     .header-inner {
+      position: relative;
+      z-index: 1;
       max-width: 980px; margin: 0 auto; display: flex; flex-wrap: wrap;
       align-items: center; justify-content: space-between; gap: 10px;
     }
@@ -630,6 +646,7 @@
 
       document.title = `${name} — Drawing & PDF Manager`;
       document.getElementById("headerBrandName").textContent = name;
+      document.documentElement.style.setProperty("--header-bg-logo", `url("${logo}")`);
       const logoEl = document.getElementById("headerLogo");
       logoEl.style.display = "";
       logoEl.src = logo;
@@ -972,7 +989,7 @@
       } else if (mode === "oldest") {
         copy.sort((a, b) => String(a.createdAt || a.id).localeCompare(String(b.createdAt || b.id)));
       } else {
-        copy.sort((a, b) => String(b.createdAt || b.id).localeCompare(String(a.createdAt || a.id)));
+        copy.sort((a, b) => String(b.createdAt || b.id).localeCompare(String(a.createdAt || b.id)));
       }
       return copy;
     }
@@ -1504,7 +1521,7 @@
       if (!("serviceWorker" in navigator) || !window.isSecureContext) return;
       const appUrl = location.href.split("#")[0];
       const swCode = `
-        const CACHE_NAME = "sgw-offline-cache-v6";
+        const CACHE_NAME = "sgw-offline-cache-v7";
         const APP_URL = ${JSON.stringify(appUrl)};
         self.addEventListener("install", (event) => {
           event.waitUntil(
