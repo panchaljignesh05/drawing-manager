@@ -115,11 +115,17 @@
     #wallpaperLayer.active {
       display: block;
     }
-    #wallpaperLayer::after {
-      content: "";
-      position: absolute;
+    #wallpaperOverlay {
+      position: fixed;
       inset: 0;
-      background: rgba(2, 6, 23, var(--wallpaper-dim, 0.45));
+      z-index: 0;
+      pointer-events: none;
+      display: none;
+      background: rgba(2, 6, 23, 0.45);
+      transition: background 0.12s ease;
+    }
+    #wallpaperOverlay.active {
+      display: block;
     }
     body.has-wallpaper {
       background: transparent;
@@ -289,6 +295,7 @@
 </head>
 <body>
   <div id="wallpaperLayer" aria-hidden="true"></div>
+  <div id="wallpaperOverlay" aria-hidden="true"></div>
 
   <header>
     <div class="header-inner">
@@ -399,7 +406,7 @@
       </div>
       <div class="field">
         <label>Wallpaper Overlay Darkness (<span id="dimValueLabel">45%</span>) — for clear text readability</label>
-        <input type="range" id="wallpaperDimSlider" min="15" max="80" step="5" value="45" />
+        <input type="range" id="wallpaperDimSlider" min="10" max="85" step="5" value="45" />
       </div>
       <div class="brand-preview-box">
         <img id="brandPreviewImg" class="brand-preview-img" src="1e4f928e-8efe-4335-9efd-a31f71419358.png" alt="Preview" onerror="this.style.display='none'" />
@@ -574,25 +581,32 @@
 
     function getSavedWallpaperDim() {
       const val = Number(localStorage.getItem(WALLPAPER_DIM_KEY));
-      if (!Number.isNaN(val) && val >= 15 && val <= 80) return val;
+      if (!Number.isNaN(val) && val >= 10 && val <= 85) return val;
       return 45;
     }
 
     function applyWallpaperDim(percent) {
-      const clamped = Math.min(80, Math.max(15, Number(percent) || 45));
+      const clamped = Math.min(85, Math.max(10, Number(percent) || 45));
       document.documentElement.style.setProperty("--wallpaper-dim", (clamped / 100).toFixed(2));
       document.getElementById("dimValueLabel").textContent = `${clamped}%`;
+      const overlay = document.getElementById("wallpaperOverlay");
+      if (overlay) {
+        overlay.style.background = `rgba(2, 6, 23, ${(clamped / 100).toFixed(2)})`;
+      }
     }
 
     function applyWallpaperVisual(dataUrl) {
       const layer = document.getElementById("wallpaperLayer");
+      const overlay = document.getElementById("wallpaperOverlay");
       if (dataUrl) {
         layer.style.backgroundImage = `url("${dataUrl}")`;
         layer.classList.add("active");
+        if (overlay) overlay.classList.add("active");
         document.body.classList.add("has-wallpaper");
       } else {
         layer.style.backgroundImage = "";
         layer.classList.remove("active");
+        if (overlay) overlay.classList.remove("active");
         document.body.classList.remove("has-wallpaper");
       }
     }
@@ -958,7 +972,7 @@
       } else if (mode === "oldest") {
         copy.sort((a, b) => String(a.createdAt || a.id).localeCompare(String(b.createdAt || b.id)));
       } else {
-        copy.sort((a, b) => String(b.createdAt || b.id).localeCompare(String(a.createdAt || b.id)));
+        copy.sort((a, b) => String(b.createdAt || b.id).localeCompare(String(a.createdAt || a.id)));
       }
       return copy;
     }
@@ -1490,7 +1504,7 @@
       if (!("serviceWorker" in navigator) || !window.isSecureContext) return;
       const appUrl = location.href.split("#")[0];
       const swCode = `
-        const CACHE_NAME = "sgw-offline-cache-v5";
+        const CACHE_NAME = "sgw-offline-cache-v6";
         const APP_URL = ${JSON.stringify(appUrl)};
         self.addEventListener("install", (event) => {
           event.waitUntil(
