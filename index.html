@@ -147,7 +147,7 @@
     header {
       background: linear-gradient(135deg, var(--primary), var(--primary-dark));
       color: #ffffff;
-      padding: 16px 14px;
+      padding: 12px 14px 4px;
       min-height: 142px;
       position: sticky;
       top: 0;
@@ -156,7 +156,7 @@
       border-bottom: 1px solid rgba(255, 255, 255, 0.14);
       overflow: visible;
       display: flex;
-      align-items: center;
+      align-items: stretch;
     }
     header::before {
       content: "";
@@ -164,8 +164,8 @@
       inset: 0;
       background-image: var(--header-bg-logo, none);
       background-repeat: no-repeat;
-      background-position: 50% 50%;
-      background-size: 132px 132px;
+      background-position: 50% 44%;
+      background-size: 124px 124px;
       opacity: 0.24;
       pointer-events: none;
       z-index: 0;
@@ -175,7 +175,7 @@
       content: "";
       position: absolute;
       inset: 0;
-      background: radial-gradient(circle at 50% 50%, rgba(2, 6, 23, 0.04) 0%, rgba(2, 6, 23, 0.34) 100%);
+      background: radial-gradient(circle at 50% 44%, rgba(2, 6, 23, 0.04) 0%, rgba(2, 6, 23, 0.34) 100%);
       pointer-events: none;
       z-index: 0;
       border-radius: inherit;
@@ -184,43 +184,46 @@
       position: relative;
       z-index: 1;
       width: 100%;
+      min-height: 124px;
       max-width: 980px;
       margin: 0 auto;
       display: flex;
-      align-items: center;
+      align-items: flex-end;
       justify-content: space-between;
       gap: 10px;
+      padding-bottom: 2px;
     }
     .brand {
       display: flex;
       align-items: center;
-      gap: 11px;
+      gap: 10px;
       min-width: 0;
       flex: 1;
+      margin-top: auto;
     }
     .brand > div:last-child {
       min-width: 0;
       flex: 1;
     }
     .logo-img {
-      width: 48px; height: 48px; border-radius: 12px;
+      width: 44px; height: 44px; border-radius: 11px;
       object-fit: contain; background: #ffffff; padding: 3px; flex-shrink: 0;
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.28);
     }
     .brand h1 {
       margin: 0;
-      font-size: 1.08rem;
+      font-size: 1.02rem;
       font-weight: 800;
-      letter-spacing: 0.4px;
+      letter-spacing: 0.35px;
       color: #ffffff;
-      line-height: 1.22;
+      line-height: 1.2;
       text-shadow: 0 1px 3px rgba(0, 0, 0, 0.45);
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
     }
     .account-sub {
-      font-size: 0.68rem;
+      font-size: 0.65rem;
       color: #f8fafc;
       opacity: 0.85;
       margin-top: 2px;
@@ -234,13 +237,14 @@
     .more-menu-wrap {
       position: relative;
       flex-shrink: 0;
+      align-self: flex-start;
     }
     .btn-more {
-      width: 38px;
-      height: 38px;
+      width: 36px;
+      height: 36px;
       padding: 0;
-      border-radius: 10px;
-      font-size: 1.22rem;
+      border-radius: 9px;
+      font-size: 1.18rem;
       font-weight: 800;
       line-height: 1;
       display: inline-flex;
@@ -316,28 +320,28 @@
     .btn-danger { background: var(--danger); color: #ffffff; }
     .btn-sm { padding: 5px 9px; font-size: 0.74rem; line-height: 1.2; border-radius: 6px; white-space: nowrap; }
 
-    .container { max-width: 980px; margin: 16px auto; padding: 0 14px 68px; }
+    .container { max-width: 980px; margin: 12px auto; padding: 0 14px 68px; }
     .toolbar-row {
-      display: flex; gap: 10px; flex-wrap: wrap; align-items: stretch; margin-bottom: 14px;
+      display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-bottom: 12px;
     }
-    .search-wrap { position: relative; flex: 1 1 220px; }
+    .search-wrap { position: relative; flex: 1 1 180px; }
     .search-box {
-      width: 100%; height: 42px; padding: 10px 36px 10px 14px; border-radius: 11px;
-      border: 1px solid var(--border); background: var(--card); color: var(--text); font-size: 0.94rem;
-      box-shadow: 0 2px 5px rgba(15, 23, 42, 0.05);
+      width: 100%; height: 36px; padding: 6px 32px 6px 12px; border-radius: 9px;
+      border: 1px solid var(--border); background: var(--card); color: var(--text); font-size: 0.85rem;
+      box-shadow: 0 1px 4px rgba(15, 23, 42, 0.05);
     }
-    .search-box::placeholder { color: var(--muted); }
+    .search-box::placeholder { color: var(--muted); font-size: 0.83rem; }
     .clear-search-btn {
-      position: absolute; right: 8px; top: 50%; transform: translateY(-50%);
+      position: absolute; right: 7px; top: 50%; transform: translateY(-50%);
       background: #e2e8f0; color: #0f172a; border-radius: 999px;
-      width: 24px; height: 24px; padding: 0; font-size: 0.78rem;
+      width: 20px; height: 20px; padding: 0; font-size: 0.72rem;
       display: none; align-items: center; justify-content: center;
     }
     .clear-search-btn.visible { display: inline-flex; }
     .sort-select {
-      height: 42px; padding: 0 12px; border-radius: 11px; border: 1px solid var(--border);
-      background: var(--card); color: var(--text); font-size: 0.86rem; font-weight: 600;
-      min-width: 150px; box-shadow: 0 2px 5px rgba(15, 23, 42, 0.05);
+      height: 36px; padding: 0 10px; border-radius: 9px; border: 1px solid var(--border);
+      background: var(--card); color: var(--text); font-size: 0.8rem; font-weight: 600;
+      min-width: 124px; box-shadow: 0 1px 4px rgba(15, 23, 42, 0.05);
     }
     .breadcrumb {
       display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
@@ -1735,7 +1739,7 @@
       if (!("serviceWorker" in navigator) || !window.isSecureContext) return;
       const appUrl = location.href.split("#")[0];
       const swCode = `
-        const CACHE_NAME = "sgw-offline-cache-v22";
+        const CACHE_NAME = "sgw-offline-cache-v23";
         const APP_URL = ${JSON.stringify(appUrl)};
         self.addEventListener("install", (event) => {
           event.waitUntil(
