@@ -1,16 +1,21 @@
 {
-  "name": "SAGAR GRINDING WORKS",
-  "short_name": "SGW ડ્રોઈંગ",
+  "name": "DRAWING FILE",
+  "short_name": "DRAWING FILE",
   "start_url": "./",
+  "scope": "./",
   "display": "standalone",
-  "background_color": "#020617",
-  "theme_color": "#020617",
+  "background_color": "#ffffff",
+  "theme_color": "#162f4d",
   "icons": [
     {
-      "src": "1e4f928e-8efe-4335-9efd-a31f71419358.png",
+      "src": "drawing-file-logo.jpg",
+      "sizes": "192x192",
+      "type": "image/jpeg"
+    },
+    {
+      "src": "drawing-file-logo.jpg",
       "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any maskable"
+      "type": "image/jpeg"
     }
   ]
 }
