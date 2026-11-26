@@ -3,9 +3,11 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link id="appFavicon" rel="icon" type="image/png" href="1e4f928e-8efe-4335-9efd-a31f71419358.png" />
-  <link id="appAppleIcon" rel="apple-touch-icon" href="1e4f928e-8efe-4335-9efd-a31f71419358.png" />
-  <title>SAGAR GRINDING WORKS — Drawing &amp; PDF Manager</title>
+  <meta name="apple-mobile-web-app-title" content="DRAWING FILE" />
+  <meta name="application-name" content="DRAWING FILE" />
+  <link id="appFavicon" rel="icon" type="image/jpeg" href="drawing-file-logo.jpg" />
+  <link id="appAppleIcon" rel="apple-touch-icon" href="drawing-file-logo.jpg" />
+  <title>DRAWING FILE</title>
   <style>
     :root {
       --bg: #f1f5f9;
@@ -842,16 +844,11 @@
       applyWallpaperDim(getSavedWallpaperDim());
       applyWallpaperVisual(activeWallpaperUrl);
 
-      document.title = `${name} — Drawing & PDF Manager`;
       document.getElementById("headerBrandName").textContent = name;
       document.documentElement.style.setProperty("--header-bg-logo", `url("${logo}")`);
       const logoEl = document.getElementById("headerLogo");
       logoEl.style.display = "";
       logoEl.src = logo;
-      const fav = document.getElementById("appFavicon");
-      const apple = document.getElementById("appAppleIcon");
-      if (fav) fav.href = logo;
-      if (apple) apple.href = logo;
     }
 
     function updateAccountUI() {
@@ -1822,7 +1819,7 @@
       if (!("serviceWorker" in navigator) || !window.isSecureContext) return;
       const appUrl = location.href.split("#")[0];
       const swCode = `
-        const CACHE_NAME = "sgw-offline-cache-v26";
+        const CACHE_NAME = "sgw-offline-cache-v28";
         const APP_URL = ${JSON.stringify(appUrl)};
         self.addEventListener("install", (event) => {
           event.waitUntil(
