@@ -145,14 +145,14 @@
       z-index: 1;
     }
     header {
-      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      background: linear-gradient(135deg, color-mix(in srgb, var(--primary) 88%, transparent), color-mix(in srgb, var(--primary-dark) 92%, transparent));
       color: #ffffff;
       padding: 12px 14px 4px;
-      min-height: 142px;
+      min-height: 144px;
       position: sticky;
       top: 0;
       z-index: 20;
-      box-shadow: 0 4px 16px rgba(2, 6, 23, 0.26);
+      box-shadow: 0 4px 16px rgba(2, 6, 23, 0.28);
       border-bottom: 1px solid rgba(255, 255, 255, 0.14);
       overflow: hidden;
       display: flex;
@@ -161,13 +161,13 @@
     header::before {
       content: "";
       position: absolute;
-      inset: 0;
+      inset: 8px 12px;
       background-image: var(--header-bg-logo, none);
       background-repeat: no-repeat;
-      background-position: 50% 42%;
-      background-size: 122px 122px;
-      opacity: 0.2;
-      mix-blend-mode: soft-light;
+      background-position: center center;
+      background-size: contain;
+      opacity: 0.34;
+      mix-blend-mode: normal;
       pointer-events: none;
       z-index: 0;
     }
@@ -175,7 +175,7 @@
       content: "";
       position: absolute;
       inset: 0;
-      background: radial-gradient(circle at 50% 42%, rgba(2, 6, 23, 0.02) 0%, rgba(2, 6, 23, 0.42) 100%);
+      background: linear-gradient(180deg, rgba(2, 6, 23, 0.12) 0%, rgba(2, 6, 23, 0.24) 60%, rgba(2, 6, 23, 0.48) 100%);
       pointer-events: none;
       z-index: 0;
     }
@@ -183,7 +183,7 @@
       position: relative;
       z-index: 1;
       width: 100%;
-      min-height: 124px;
+      min-height: 126px;
       max-width: 980px;
       margin: 0 auto;
       display: flex;
@@ -216,7 +216,7 @@
       letter-spacing: 0.35px;
       color: #ffffff;
       line-height: 1.2;
-      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.45);
+      text-shadow: 0 1px 4px rgba(0, 0, 0, 0.65);
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -224,9 +224,10 @@
     .account-sub {
       font-size: 0.65rem;
       color: #f8fafc;
-      opacity: 0.85;
+      opacity: 0.9;
       margin-top: 2px;
       letter-spacing: 0.1px;
+      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -249,10 +250,10 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      background: rgba(255, 255, 255, 0.16);
+      background: rgba(255, 255, 255, 0.18);
       color: #ffffff;
-      border: 1px solid rgba(255, 255, 255, 0.24);
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.26);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.24);
     }
     .more-dropdown {
       position: fixed;
@@ -1821,7 +1822,7 @@
       if (!("serviceWorker" in navigator) || !window.isSecureContext) return;
       const appUrl = location.href.split("#")[0];
       const swCode = `
-        const CACHE_NAME = "sgw-offline-cache-v25";
+        const CACHE_NAME = "sgw-offline-cache-v26";
         const APP_URL = ${JSON.stringify(appUrl)};
         self.addEventListener("install", (event) => {
           event.waitUntil(
