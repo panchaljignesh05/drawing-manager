@@ -147,16 +147,16 @@
     header {
       background: linear-gradient(135deg, var(--primary), var(--primary-dark));
       color: #ffffff;
-      padding: 15px 14px 4px;
-      min-height: 146px;
+      padding: 16px 14px;
+      min-height: 142px;
       position: sticky;
       top: 0;
       z-index: 20;
       box-shadow: 0 4px 16px rgba(2, 6, 23, 0.26);
       border-bottom: 1px solid rgba(255, 255, 255, 0.14);
-      overflow: hidden;
+      overflow: visible;
       display: flex;
-      align-items: stretch;
+      align-items: center;
     }
     header::before {
       content: "";
@@ -164,32 +164,28 @@
       inset: 0;
       background-image: var(--header-bg-logo, none);
       background-repeat: no-repeat;
-      background-position: 50% 54%;
-      background-size: 134px 134px;
-      opacity: 0.22;
+      background-position: 50% 50%;
+      background-size: 132px 132px;
+      opacity: 0.24;
       pointer-events: none;
       z-index: 0;
+      border-radius: inherit;
     }
     header::after {
       content: "";
       position: absolute;
       inset: 0;
-      background: radial-gradient(circle at 50% 54%, rgba(2, 6, 23, 0.04) 0%, rgba(2, 6, 23, 0.34) 100%);
+      background: radial-gradient(circle at 50% 50%, rgba(2, 6, 23, 0.04) 0%, rgba(2, 6, 23, 0.34) 100%);
       pointer-events: none;
       z-index: 0;
+      border-radius: inherit;
     }
     .header-inner {
       position: relative;
       z-index: 1;
       width: 100%;
-      min-height: 124px;
       max-width: 980px;
       margin: 0 auto;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-    .header-top-row {
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -207,7 +203,7 @@
       flex: 1;
     }
     .logo-img {
-      width: 46px; height: 46px; border-radius: 11px;
+      width: 48px; height: 48px; border-radius: 12px;
       object-fit: contain; background: #ffffff; padding: 3px; flex-shrink: 0;
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.28);
     }
@@ -233,49 +229,79 @@
       overflow: hidden;
       text-overflow: ellipsis;
     }
-    .header-split-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 8px;
-      min-height: 26px;
-      margin-top: auto;
-    }
-    .header-bottom-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 6px;
-      min-height: 22px;
-      padding-top: 4px;
-    }
-    .mini-stats-pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      background: rgba(255, 255, 255, 0.1);
-      border: 1px solid rgba(255, 255, 255, 0.16);
-      color: #f1f5f9;
-      font-size: 0.64rem;
-      font-weight: 600;
-      padding: 2px 8px;
-      border-radius: 999px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      max-width: calc(100% - 92px);
-      opacity: 0.92;
-    }
-    .side-utility-actions {
-      display: flex;
-      gap: 4px;
-      align-items: center;
-      margin-left: auto;
+
+    /* Three-Dot Menu Button & Dropdown */
+    .more-menu-wrap {
+      position: relative;
       flex-shrink: 0;
     }
+    .btn-more {
+      width: 38px;
+      height: 38px;
+      padding: 0;
+      border-radius: 10px;
+      font-size: 1.22rem;
+      font-weight: 800;
+      line-height: 1;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255, 255, 255, 0.16);
+      color: #ffffff;
+      border: 1px solid rgba(255, 255, 255, 0.24);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    }
+    .more-dropdown {
+      position: absolute;
+      top: calc(100% + 8px);
+      right: 0;
+      width: 245px;
+      background: var(--card);
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      box-shadow: 0 12px 28px rgba(2, 6, 23, 0.35);
+      padding: 6px;
+      display: none;
+      flex-direction: column;
+      gap: 4px;
+      z-index: 60;
+    }
+    .more-dropdown.open {
+      display: flex;
+    }
+    .more-stats-box {
+      padding: 7px 10px;
+      border-radius: 8px;
+      background: var(--card-subtle);
+      border: 1px solid var(--border);
+      font-size: 0.73rem;
+      font-weight: 600;
+      color: var(--muted);
+      line-height: 1.35;
+      margin-bottom: 2px;
+    }
+    .more-item-btn {
+      width: 100%;
+      justify-content: flex-start;
+      background: transparent;
+      color: var(--text);
+      padding: 9px 10px;
+      border-radius: 8px;
+      font-size: 0.84rem;
+      font-weight: 600;
+    }
+    .more-item-btn:hover {
+      background: var(--card-subtle);
+    }
+    .more-item-primary {
+      background: rgba(15, 118, 110, 0.14);
+      color: var(--accent);
+    }
+
     button, .btn {
       border: none; border-radius: 8px; padding: 8px 12px; font-size: 0.86rem;
-      cursor: pointer; font-weight: 600; display: inline-flex; align-items: center; gap: 5px;
+      cursor: pointer; font-weight: 600; display: inline-flex; align-items: center; gap: 6px;
       text-decoration: none; transition: opacity 0.15s ease, transform 0.1s ease, background 0.15s ease;
     }
     button:active, .btn:active { transform: scale(0.98); }
@@ -286,19 +312,9 @@
       color: #ffffff;
       border: 1px solid rgba(255, 255, 255, 0.22);
     }
-    .btn-icon {
-      padding: 2px 6px;
-      font-size: 0.7rem;
-      line-height: 1.1;
-      border-radius: 6px;
-      background: rgba(255, 255, 255, 0.11);
-      color: #ffffff;
-      border: 1px solid rgba(255, 255, 255, 0.18);
-      opacity: 0.92;
-    }
     .btn-outline { background: var(--card-subtle); color: var(--text); border: 1px solid var(--border); }
     .btn-danger { background: var(--danger); color: #ffffff; }
-    .btn-sm { padding: 4px 9px; font-size: 0.72rem; line-height: 1.2; border-radius: 6px; white-space: nowrap; }
+    .btn-sm { padding: 5px 9px; font-size: 0.74rem; line-height: 1.2; border-radius: 6px; white-space: nowrap; }
 
     .container { max-width: 980px; margin: 16px auto; padding: 0 14px 68px; }
     .toolbar-row {
@@ -424,33 +440,30 @@
 
   <header>
     <div class="header-inner">
-      <div class="header-top-row">
-        <div class="brand">
-          <img
-            id="headerLogo"
-            src="1e4f928e-8efe-4335-9efd-a31f71419358.png"
-            alt="Brand Logo"
-            class="logo-img"
-            onerror="this.style.display='none'"
-          />
-          <div>
-            <h1 id="headerBrandName">SAGAR GRINDING WORKS</h1>
-            <div class="account-sub" id="accountStatusText">Local Mode</div>
-          </div>
+      <div class="brand">
+        <img
+          id="headerLogo"
+          src="1e4f928e-8efe-4335-9efd-a31f71419358.png"
+          alt="Brand Logo"
+          class="logo-img"
+          onerror="this.style.display='none'"
+        />
+        <div>
+          <h1 id="headerBrandName">SAGAR GRINDING WORKS</h1>
+          <div class="account-sub" id="accountStatusText">Local Mode</div>
         </div>
       </div>
 
-      <div class="header-split-row">
-        <button class="btn-light btn-sm" id="btnGoogleAuth" title="Gmail Account & Auto Cloud Backup">🔑 Gmail</button>
-        <button class="btn-primary btn-sm" id="btnAddCompany" title="Add Company">+ Company</button>
-      </div>
-
-      <div class="header-bottom-row">
-        <span class="mini-stats-pill" id="headerStats" title="Companies / Drawings / Storage / Backup">📁 0 • 📄 0 • 0.0 MB</span>
-        <div class="side-utility-actions">
-          <button class="btn-icon" id="btnBrandSettings" title="Brand, Logo, Theme & Wallpaper">🎨</button>
-          <button class="btn-icon" id="btnBackup" title="Backup">💾</button>
-          <button class="btn-icon" id="btnRestore" title="Restore">♻️</button>
+      <div class="more-menu-wrap" id="moreMenuWrap">
+        <button type="button" class="btn-more" id="btnMoreMenu" title="Menu &amp; Settings" aria-expanded="false">⋮</button>
+        <div class="more-dropdown" id="moreDropdown" role="menu">
+          <div class="more-stats-box" id="headerStats" title="Companies / Drawings / Storage / Backup">📁 0 • 📄 0 • 0.0 MB</div>
+          <button type="button" class="more-item-btn more-item-primary" id="btnAddCompany">+ Add Company</button>
+          <button type="button" class="more-item-btn" id="btnGoogleAuth">🔑 Gmail Account</button>
+          <button type="button" class="more-item-btn" id="btnShareApp">📤 Share App</button>
+          <button type="button" class="more-item-btn" id="btnBrandSettings">🎨 Brand, Logo &amp; Theme</button>
+          <button type="button" class="more-item-btn" id="btnBackup">💾 Backup Data</button>
+          <button type="button" class="more-item-btn" id="btnRestore">♻️ Restore Backup</button>
           <input type="file" id="restoreFile" accept=".json,application/json" style="display:none" />
         </div>
       </div>
@@ -699,6 +712,33 @@
       window._toastTimer = setTimeout(() => (t.style.display = "none"), 2800);
     }
 
+    function closeMoreMenu() {
+      const dd = document.getElementById("moreDropdown");
+      const btn = document.getElementById("btnMoreMenu");
+      if (dd) dd.classList.remove("open");
+      if (btn) btn.setAttribute("aria-expanded", "false");
+    }
+
+    function toggleMoreMenu() {
+      const dd = document.getElementById("moreDropdown");
+      const btn = document.getElementById("btnMoreMenu");
+      if (!dd) return;
+      const isOpen = dd.classList.toggle("open");
+      if (btn) btn.setAttribute("aria-expanded", String(isOpen));
+    }
+
+    document.getElementById("btnMoreMenu").onclick = (e) => {
+      e.stopPropagation();
+      toggleMoreMenu();
+    };
+
+    document.addEventListener("click", (e) => {
+      const wrap = document.getElementById("moreMenuWrap");
+      if (wrap && !wrap.contains(e.target)) {
+        closeMoreMenu();
+      }
+    });
+
     function getActiveBrandName() {
       return localStorage.getItem(BRAND_NAME_KEY) || DEFAULT_BRAND_NAME;
     }
@@ -814,15 +854,15 @@
         signOutBtn.style.display = "inline-flex";
         hint.innerHTML = `<b>Status:</b> Automatic Cloud Sync is active.`;
       } else if (isFirebaseReady()) {
-        sub.textContent = "Local Mode • Sign in with Gmail for Cloud Sync";
-        btn.textContent = "🔑 Gmail";
+        sub.textContent = "Local Mode • Gmail Sign-In Optional";
+        btn.textContent = "🔑 Gmail Account";
         modalInfo.textContent = "Sign in with your Gmail ID so your data automatically restores when you sign in on a new or secondary phone.";
         signInBtn.style.display = "inline-flex";
         signOutBtn.style.display = "none";
         hint.innerHTML = `<b>Status:</b> Not signed in (data is currently stored locally on this device).`;
       } else {
         sub.textContent = "Local + Offline Mode";
-        btn.textContent = "🔑 Gmail";
+        btn.textContent = "🔑 Gmail Account";
         modalInfo.textContent = "Add your FIREBASE_CONFIG keys in the code to enable Gmail login and cloud sync.";
         signInBtn.style.display = "inline-flex";
         signOutBtn.style.display = "none";
@@ -871,6 +911,7 @@
         ignoringPop = false;
         return;
       }
+      closeMoreMenu();
       const openModals = ["viewerModal", "drawingModal", "companyModal", "brandModal", "accountModal"].filter(id =>
         document.getElementById(id).classList.contains("open")
       );
@@ -1156,7 +1197,7 @@
           c.name.toLowerCase().includes(q) || (c.note || "").toLowerCase().includes(q)
         ));
         if (!filtered.length) {
-          area.innerHTML = `<div class="empty">No companies found. Tap <b>"+ Company"</b> above to create a folder.</div>`;
+          area.innerHTML = `<div class="empty">No companies found. Tap <b>"⋮ → + Add Company"</b> above to create a folder.</div>`;
           return;
         }
         area.innerHTML = `<div class="grid">${filtered.map(c => {
@@ -1299,7 +1340,31 @@
       openModal("viewerModal");
     };
 
+    document.getElementById("btnShareApp").onclick = async () => {
+      closeMoreMenu();
+      const brand = getActiveBrandName();
+      const shareUrl = location.href.split("#")[0];
+      const shareText = `${brand} — Drawing & PDF Manager`;
+      try {
+        if (navigator.share) {
+          await navigator.share({ title: shareText, text: shareText, url: shareUrl });
+          return;
+        }
+      } catch (err) {
+        if (err && err.name === "AbortError") return;
+      }
+      try {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          await navigator.clipboard.writeText(shareUrl);
+          showToast("App link copied to clipboard");
+          return;
+        }
+      } catch (_) {}
+      window.open(`https://wa.me/?text=${encodeURIComponent(`${shareText}\n${shareUrl}`)}`, "_blank");
+    };
+
     document.getElementById("btnGoogleAuth").onclick = () => {
+      closeMoreMenu();
       updateAccountUI();
       openModal("accountModal");
     };
@@ -1332,6 +1397,7 @@
     };
 
     document.getElementById("btnBrandSettings").onclick = () => {
+      closeMoreMenu();
       pendingBrandLogoUrl = null;
       pendingWallpaperUrl = null;
       removeWallpaperRequested = false;
@@ -1496,6 +1562,7 @@
     };
 
     document.getElementById("btnAddCompany").onclick = () => {
+      closeMoreMenu();
       editingCompanyId = null;
       document.getElementById("companyModalTitle").textContent = "Add New Company";
       document.getElementById("companyNameInput").value = "";
@@ -1611,6 +1678,7 @@
     };
 
     document.getElementById("btnBackup").onclick = () => {
+      closeMoreMenu();
       const payload = {
         app: "SAGAR_GRINDING_WORKS_DRAWING_MANAGER",
         exportedAt: new Date().toISOString(),
@@ -1630,6 +1698,7 @@
     };
 
     document.getElementById("btnRestore").onclick = () => {
+      closeMoreMenu();
       document.getElementById("restoreFile").click();
     };
 
@@ -1666,7 +1735,7 @@
       if (!("serviceWorker" in navigator) || !window.isSecureContext) return;
       const appUrl = location.href.split("#")[0];
       const swCode = `
-        const CACHE_NAME = "sgw-offline-cache-v20";
+        const CACHE_NAME = "sgw-offline-cache-v22";
         const APP_URL = ${JSON.stringify(appUrl)};
         self.addEventListener("install", (event) => {
           event.waitUntil(
