@@ -236,6 +236,9 @@
       overflow: hidden;
       text-overflow: ellipsis;
     }
+    #accountStatusText {
+      display: none !important;
+    }
 
     /* Three-Dot Menu Button & Dropdown */
     .more-menu-wrap {
@@ -1821,7 +1824,7 @@
       if (!("serviceWorker" in navigator) || !window.isSecureContext) return;
       const appUrl = location.href.split("#")[0];
       const swCode = `
-        const CACHE_NAME = "sgw-offline-cache-v28";
+        const CACHE_NAME = "sgw-offline-cache-v29";
         const APP_URL = ${JSON.stringify(appUrl)};
         self.addEventListener("install", (event) => {
           event.waitUntil(
