@@ -467,6 +467,7 @@
           <div class="more-stats-box" id="headerStats" title="Companies / Drawings / Storage / Backup">📁 0 • 📄 0 • 0.0 MB</div>
           <button type="button" class="more-item-btn more-item-primary" id="btnAddCompany">+ Add Company</button>
           <button type="button" class="more-item-btn" id="btnGoogleAuth">🔑 Gmail Account</button>
+          <button type="button" class="more-item-btn" id="btnInstallApp">📲 Install App</button>
           <button type="button" class="more-item-btn" id="btnShareApp">📤 Share App</button>
           <button type="button" class="more-item-btn" id="btnBrandSettings">🎨 Brand, Logo &amp; Theme</button>
           <button type="button" class="more-item-btn" id="btnBackup">💾 Backup Data</button>
@@ -596,7 +597,7 @@
   <div class="modal-backdrop" id="drawingModal">
     <div class="modal">
       <h3 id="drawingModalTitle">Save New Drawing</h3>
-      <div class="field">
+      <div class="field" id="drawingTitleField">
         <label>Drawing Name / Number *</label>
         <input type="text" id="drawingTitleInput" placeholder="e.g. DRG-102 Shaft Grinding" />
       </div>
@@ -610,8 +611,9 @@
         </select>
       </div>
       <div class="field" id="drawingFileField">
-        <label id="drawingFileLabel">Select File (JPG, PNG or PDF) *</label>
-        <input type="file" id="drawingFileInput" accept="image/*,application/pdf" />
+        <label id="drawingFileLabel">Select File(s) (JPG, PNG or PDF) *</label>
+        <input type="file" id="drawingFileInput" accept="image/*,application/pdf" multiple />
+        <div class="meta" id="selectedFilesHint" style="margin-top:5px;">Multiple files supported: file names will become drawing titles automatically.</div>
       </div>
       <div style="display:flex; gap:8px; justify-content:flex-end;">
         <button class="btn-outline" data-close="drawingModal">Cancel</button>
@@ -702,11 +704,17 @@
     let zoomLevel = 1;
     let rotationDeg = 0;
     let ignoringPop = false;
+    let deferredInstallPrompt = null;
 
     let firebaseAuth = null;
     let firebaseDb = null;
     let currentUser = null;
     let isSyncing = false;
+
+    window.addEventListener("beforeinstallprompt", (e) => {
+      e.preventDefault();
+      deferredInstallPrompt = e;
+    });
 
     function isFirebaseReady() {
       return Boolean(FIREBASE_CONFIG && FIREBASE_CONFIG.apiKey && FIREBASE_CONFIG.projectId);
@@ -1298,10 +1306,14 @@
       if (!drg) return;
       editingDrawingId = id;
       document.getElementById("drawingModalTitle").textContent = "Edit Drawing";
+      document.getElementById("drawingTitleField").style.display = "block";
       document.getElementById("drawingTitleInput").value = drg.title;
       document.getElementById("drawingRevInput").value = drg.rev || "Rev 0";
-      document.getElementById("drawingFileInput").value = "";
+      const fileInp = document.getElementById("drawingFileInput");
+      fileInp.multiple = false;
+      fileInp.value = "";
       document.getElementById("drawingFileLabel").textContent = "Select a Replacement File (Optional)";
+      document.getElementById("selectedFilesHint").textContent = "Choose a single replacement file if needed.";
       document.getElementById("drawingFileField").style.display = "block";
       openModal("drawingModal");
     };
@@ -1360,6 +1372,25 @@
       dl.href = d.dataUrl;
       dl.download = d.fileName || `${d.title}.pdf`;
       openModal("viewerModal");
+    };
+
+    document.getElementById("btnInstallApp").onclick = async () => {
+      closeMoreMenu();
+      if (window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone) {
+        return showToast("App is already installed on your home screen");
+      }
+      if (deferredInstallPrompt) {
+        try {
+          deferredInstallPrompt.prompt();
+          const choice = await deferredInstallPrompt.userChoice;
+          deferredInstallPrompt = null;
+          if (choice && choice.outcome === "accepted") {
+            showToast("App installed to home screen");
+          }
+          return;
+        } catch (_) {}
+      }
+      showToast("Browser menu (⋮) → 'Add to Home Screen' / 'Install App' tap karein");
     };
 
     document.getElementById("btnShareApp").onclick = async () => {
@@ -1619,84 +1650,117 @@
 
     document.getElementById("btnAddDrawing").onclick = () => {
       editingDrawingId = null;
-      document.getElementById("drawingModalTitle").textContent = "Save New Drawing";
+      document.getElementById("drawingModalTitle").textContent = "Save New Drawing(s)";
+      document.getElementById("drawingTitleField").style.display = "block";
       document.getElementById("drawingTitleInput").value = "";
       document.getElementById("drawingRevInput").value = "Rev 0";
-      document.getElementById("drawingFileInput").value = "";
-      document.getElementById("drawingFileLabel").textContent = "Select File (JPG, PNG or PDF) *";
+      const fileInp = document.getElementById("drawingFileInput");
+      fileInp.multiple = true;
+      fileInp.value = "";
+      document.getElementById("drawingFileLabel").textContent = "Select File(s) (JPG, PNG or PDF) *";
+      document.getElementById("selectedFilesHint").textContent = "Multiple files supported: file names will become drawing titles automatically.";
       document.getElementById("drawingFileField").style.display = "block";
       openModal("drawingModal");
     };
 
+    document.getElementById("drawingFileInput").onchange = (e) => {
+      if (editingDrawingId) return;
+      const files = Array.from(e.target.files || []);
+      const titleField = document.getElementById("drawingTitleField");
+      const hint = document.getElementById("selectedFilesHint");
+      if (files.length > 1) {
+        titleField.style.display = "none";
+        hint.textContent = `${files.length} files selected — each file name will be used as title.`;
+      } else {
+        titleField.style.display = "block";
+        hint.textContent = "Multiple files supported: file names will become drawing titles automatically.";
+      }
+    };
+
+    function readFileAsDataUrl(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = () => reject(reader.error);
+        reader.readAsDataURL(file);
+      });
+    }
+
     document.getElementById("saveDrawingBtn").onclick = async () => {
       const title = document.getElementById("drawingTitleInput").value.trim();
       const rev = document.getElementById("drawingRevInput").value;
-      const newFile = document.getElementById("drawingFileInput").files[0];
-      if (!title) return showToast("Please enter a drawing name");
+      const fileList = Array.from(document.getElementById("drawingFileInput").files || []);
 
       if (editingDrawingId) {
+        if (!title) return showToast("Please enter a drawing name");
         const existing = drawings.find(d => d.id === editingDrawingId);
         if (!existing) return;
 
-        const finishUpdate = async (fileObj) => {
-          const updatedRecord = {
-            ...existing,
-            title,
-            rev,
-            fileName: fileObj ? fileObj.name : existing.fileName,
-            fileType: fileObj ? fileObj.type : existing.fileType,
-            dataUrl: fileObj ? fileObj.dataUrl : existing.dataUrl
-          };
-          await txPut("drawings", updatedRecord);
-          editingDrawingId = null;
-          closeModalWithHistory("drawingModal");
-          showToast("Drawing updated");
-          await refreshLocalUI();
-          await saveDrawingToCloud(updatedRecord);
-        };
-
+        const newFile = fileList[0] || null;
+        let fileObj = null;
         if (newFile) {
           if (newFile.size > 750000) {
             showToast("Files under 750 KB sync best to Cloud");
           }
-          const reader = new FileReader();
-          reader.onload = () => finishUpdate({
-            name: newFile.name,
-            type: newFile.type,
-            dataUrl: reader.result
-          });
-          reader.readAsDataURL(newFile);
-        } else {
-          await finishUpdate(null);
+          const dataUrl = await readFileAsDataUrl(newFile);
+          fileObj = { name: newFile.name, type: newFile.type, dataUrl };
         }
+
+        const updatedRecord = {
+          ...existing,
+          title,
+          rev,
+          fileName: fileObj ? fileObj.name : existing.fileName,
+          fileType: fileObj ? fileObj.type : existing.fileType,
+          dataUrl: fileObj ? fileObj.dataUrl : existing.dataUrl
+        };
+        await txPut("drawings", updatedRecord);
+        editingDrawingId = null;
+        closeModalWithHistory("drawingModal");
+        showToast("Drawing updated");
+        await refreshLocalUI();
+        await saveDrawingToCloud(updatedRecord);
         return;
       }
 
-      if (!newFile) return showToast("Please select a file");
-      if (newFile.size > 750000) {
-        showToast("Large file saved locally; files under 750 KB work best for Cloud");
+      if (!fileList.length) return showToast("Please select a file");
+
+      if (fileList.length === 1 && !title) {
+        return showToast("Please enter a drawing name");
       }
 
-      const reader = new FileReader();
-      reader.onload = async () => {
+      const hasLargeFile = fileList.some(f => f.size > 750000);
+      if (hasLargeFile) {
+        showToast("Large file(s) saved locally; under 750 KB syncs best to Cloud");
+      }
+
+      const todayStr = new Date().toLocaleDateString("en-GB");
+      let savedCount = 0;
+
+      for (let i = 0; i < fileList.length; i++) {
+        const f = fileList[i];
+        const baseName = f.name.replace(/\.[^/.]+$/, "").trim() || `Drawing ${i + 1}`;
+        const finalTitle = fileList.length === 1 ? title : baseName;
+        const dataUrl = await readFileAsDataUrl(f);
         const newRecord = {
-          id: "drg_" + Date.now() + "_" + Math.random().toString(36).slice(2, 6),
+          id: "drg_" + Date.now() + "_" + i + "_" + Math.random().toString(36).slice(2, 5),
           companyId: selectedCompanyId,
-          title,
+          title: finalTitle,
           rev,
-          fileName: newFile.name,
-          fileType: newFile.type,
-          dataUrl: reader.result,
-          date: new Date().toLocaleDateString("en-GB"),
-          createdAt: new Date().toISOString()
+          fileName: f.name,
+          fileType: f.type,
+          dataUrl,
+          date: todayStr,
+          createdAt: new Date(Date.now() + i).toISOString()
         };
         await txPut("drawings", newRecord);
-        closeModalWithHistory("drawingModal");
-        showToast("Drawing saved successfully");
-        await refreshLocalUI();
         await saveDrawingToCloud(newRecord);
-      };
-      reader.readAsDataURL(newFile);
+        savedCount++;
+      }
+
+      closeModalWithHistory("drawingModal");
+      showToast(savedCount > 1 ? `${savedCount} drawings saved successfully` : "Drawing saved successfully");
+      await refreshLocalUI();
     };
 
     document.getElementById("btnBackup").onclick = () => {
@@ -1757,7 +1821,7 @@
       if (!("serviceWorker" in navigator) || !window.isSecureContext) return;
       const appUrl = location.href.split("#")[0];
       const swCode = `
-        const CACHE_NAME = "sgw-offline-cache-v24";
+        const CACHE_NAME = "sgw-offline-cache-v25";
         const APP_URL = ${JSON.stringify(appUrl)};
         self.addEventListener("install", (event) => {
           event.waitUntil(
