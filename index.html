@@ -154,7 +154,7 @@
       z-index: 20;
       box-shadow: 0 4px 16px rgba(2, 6, 23, 0.26);
       border-bottom: 1px solid rgba(255, 255, 255, 0.14);
-      overflow: visible;
+      overflow: hidden;
       display: flex;
       align-items: stretch;
     }
@@ -164,21 +164,20 @@
       inset: 0;
       background-image: var(--header-bg-logo, none);
       background-repeat: no-repeat;
-      background-position: 50% 44%;
-      background-size: 124px 124px;
-      opacity: 0.24;
+      background-position: 50% 42%;
+      background-size: 122px 122px;
+      opacity: 0.2;
+      mix-blend-mode: soft-light;
       pointer-events: none;
       z-index: 0;
-      border-radius: inherit;
     }
     header::after {
       content: "";
       position: absolute;
       inset: 0;
-      background: radial-gradient(circle at 50% 44%, rgba(2, 6, 23, 0.04) 0%, rgba(2, 6, 23, 0.34) 100%);
+      background: radial-gradient(circle at 50% 42%, rgba(2, 6, 23, 0.02) 0%, rgba(2, 6, 23, 0.42) 100%);
       pointer-events: none;
       z-index: 0;
-      border-radius: inherit;
     }
     .header-inner {
       position: relative;
@@ -256,9 +255,9 @@
       box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
     }
     .more-dropdown {
-      position: absolute;
-      top: calc(100% + 8px);
-      right: 0;
+      position: fixed;
+      top: 56px;
+      right: 14px;
       width: 245px;
       background: var(--card);
       color: var(--text);
@@ -269,7 +268,7 @@
       display: none;
       flex-direction: column;
       gap: 4px;
-      z-index: 60;
+      z-index: 80;
     }
     .more-dropdown.open {
       display: flex;
@@ -322,15 +321,15 @@
 
     .container { max-width: 980px; margin: 12px auto; padding: 0 14px 68px; }
     .toolbar-row {
-      display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-bottom: 12px;
+      display: flex; gap: 8px; align-items: center; margin-bottom: 10px;
     }
-    .search-wrap { position: relative; flex: 1 1 180px; }
+    .search-wrap { position: relative; flex: 1 1 auto; min-width: 0; }
     .search-box {
-      width: 100%; height: 36px; padding: 6px 32px 6px 12px; border-radius: 9px;
-      border: 1px solid var(--border); background: var(--card); color: var(--text); font-size: 0.85rem;
+      width: 100%; height: 36px; padding: 6px 30px 6px 11px; border-radius: 9px;
+      border: 1px solid var(--border); background: var(--card); color: var(--text); font-size: 0.84rem;
       box-shadow: 0 1px 4px rgba(15, 23, 42, 0.05);
     }
-    .search-box::placeholder { color: var(--muted); font-size: 0.83rem; }
+    .search-box::placeholder { color: var(--muted); font-size: 0.8rem; }
     .clear-search-btn {
       position: absolute; right: 7px; top: 50%; transform: translateY(-50%);
       background: #e2e8f0; color: #0f172a; border-radius: 999px;
@@ -339,10 +338,14 @@
     }
     .clear-search-btn.visible { display: inline-flex; }
     .sort-select {
-      height: 36px; padding: 0 10px; border-radius: 9px; border: 1px solid var(--border);
-      background: var(--card); color: var(--text); font-size: 0.8rem; font-weight: 600;
-      min-width: 124px; box-shadow: 0 1px 4px rgba(15, 23, 42, 0.05);
+      height: 36px; padding: 0 8px; border-radius: 9px; border: 1px solid var(--border);
+      background: var(--card); color: var(--text); font-size: 0.78rem; font-weight: 600;
+      flex-shrink: 0; box-shadow: 0 1px 4px rgba(15, 23, 42, 0.05);
     }
+    .filter-summary {
+      font-size: 0.74rem; color: var(--muted); margin-bottom: 10px; display: none;
+    }
+    .filter-summary.visible { display: block; }
     .breadcrumb {
       display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
       margin-bottom: 14px; font-size: 0.92rem;
@@ -486,6 +489,7 @@
         <option value="az">Name (A–Z)</option>
       </select>
     </div>
+    <div id="filterSummary" class="filter-summary"></div>
 
     <div id="breadcrumb" class="breadcrumb" style="display:none">
       <button class="btn-outline btn-sm" id="btnBack">← All Companies</button>
@@ -1187,6 +1191,18 @@
       render();
     }
 
+    function updateFilterSummary(count, label) {
+      const el = document.getElementById("filterSummary");
+      const q = document.getElementById("searchInput").value.trim();
+      if (q) {
+        el.textContent = `${count} ${label} matching "${q}"`;
+        el.classList.add("visible");
+      } else {
+        el.textContent = "";
+        el.classList.remove("visible");
+      }
+    }
+
     function render() {
       const searchEl = document.getElementById("searchInput");
       const q = searchEl.value.trim().toLowerCase();
@@ -1200,6 +1216,7 @@
         const filtered = sortItems(companies.filter(c =>
           c.name.toLowerCase().includes(q) || (c.note || "").toLowerCase().includes(q)
         ));
+        updateFilterSummary(filtered.length, filtered.length === 1 ? "company" : "companies");
         if (!filtered.length) {
           area.innerHTML = `<div class="empty">No companies found. Tap <b>"⋮ → + Add Company"</b> above to create a folder.</div>`;
           return;
@@ -1230,6 +1247,7 @@
           d.companyId === selectedCompanyId &&
           (d.title.toLowerCase().includes(q) || (d.rev || "").toLowerCase().includes(q))
         ));
+        updateFilterSummary(list.length, list.length === 1 ? "drawing" : "drawings");
         if (!list.length) {
           area.innerHTML = `<div class="empty">No drawings in this company yet. Tap <b>"+ Add Drawing"</b> to upload one.</div>`;
           return;
@@ -1739,7 +1757,7 @@
       if (!("serviceWorker" in navigator) || !window.isSecureContext) return;
       const appUrl = location.href.split("#")[0];
       const swCode = `
-        const CACHE_NAME = "sgw-offline-cache-v23";
+        const CACHE_NAME = "sgw-offline-cache-v24";
         const APP_URL = ${JSON.stringify(appUrl)};
         self.addEventListener("install", (event) => {
           event.waitUntil(
